@@ -19,6 +19,7 @@ public class PostCommentRequestDto {
     List<ProfileListDto> ProfileImages;
     private String comment;
     private Long CommentLikeCount;
+    private boolean commentLikeStatus;
     private String commentTime;
 
 

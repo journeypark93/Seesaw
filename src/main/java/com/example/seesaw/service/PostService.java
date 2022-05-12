@@ -3,6 +3,7 @@ package com.example.seesaw.service;
 import com.example.seesaw.dto.*;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
+import com.example.seesaw.security.UserDetailsImpl;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 @Builder
 @RequiredArgsConstructor
@@ -31,6 +31,8 @@ public class PostService {
     private final ConvertTimeService convertTimeService;
     private final PostCommentRepository postCommentRepository;
     private final UserRepository userRepository;
+    private final PostScrapRepository postScrapRepository;
+    private final PostCommentLikeRepository postCommentLikeRepository;
 
     //단어장 작성
     public void createPost(PostRequestDto requestDto, List<MultipartFile> files, User user) {
@@ -128,7 +130,7 @@ public class PostService {
     }
 
     // 단어 상세 보기.
-    public PostDetailResponseDto findDetailPost(Long postId, int page) {
+    public PostDetailResponseDto findDetailPost(Long postId, int page, User user) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
@@ -147,6 +149,9 @@ public class PostService {
         post.setViews(post.getViews()+1);
         postRepository.save(post);
 
+        PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
+        postDetailResponseDto.setScrapStatus(savedPostScrap != null);
+
         // paging 처리
         Pageable pageable = PageRequest.of(page-1, 4);
         Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId,pageable);
@@ -159,14 +164,15 @@ public class PostService {
         List<PostCommentRequestDto> postCommentRequestDtos = new ArrayList<>();
         for(PostComment postComment:postCommentPage){
             PostCommentRequestDto postCommentRequestDto = new PostCommentRequestDto(postComment);
-            User user = userRepository.findByNickname(postComment.getNickname()).orElseThrow(
+            User commentUser = userRepository.findByNickname(postComment.getNickname()).orElseThrow(
                     () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
-            postCommentRequestDto.setProfileImages(userService.findUserProfiles(user));
+            postCommentRequestDto.setProfileImages(userService.findUserProfiles(commentUser));
             postCommentRequestDto.setCommentLikeCount(postComment.getLikeCount());
             String postCommentTime = convertTimeService.convertLocaldatetimeToTime(postComment.getCreatedAt());
             postCommentRequestDto.setCommentTime(postCommentTime);
+            PostCommentLike savedPostCommentLike = postCommentLikeRepository.findByPostCommentAndUserId(postComment, user.getId());
+            postCommentRequestDto.setCommentLikeStatus(savedPostCommentLike != null);
             postCommentRequestDtos.add(postCommentRequestDto);
-
         }
         postDetailResponseDto.setPostComments(postCommentRequestDtos);
 
