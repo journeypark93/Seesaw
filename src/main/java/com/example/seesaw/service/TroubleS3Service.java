@@ -89,7 +89,7 @@ public class TroubleS3Service {
 
         List<String> lastImages = new ArrayList<>();
         for (TroubleImage savedImage: savedImages){
-            lastImages.add(savedImage.getTroubleImageUrl());
+            lastImages.add(savedImage.getTroubleImage());
         }
         if(imageUrls != null){
             lastImages.removeAll(imageUrls);
@@ -107,7 +107,7 @@ public class TroubleS3Service {
                 }
             }
             System.out.println(lastImage);
-            troubleImageRepository.deleteByTroubleImageUrl(lastImage);
+            troubleImageRepository.deleteByTroubleImage(lastImage);
         }
     }
 

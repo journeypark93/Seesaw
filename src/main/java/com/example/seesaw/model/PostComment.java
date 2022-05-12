@@ -31,6 +31,7 @@ public class PostComment extends Timestamped {
     @Column
     private Long likeCount = 0L;
 
+
     public PostComment(Post post, PostCommentRequestDto requestDto) {
         this.post = post;
         this.comment = requestDto.getComment();

@@ -98,7 +98,6 @@ public class PostController {
                 .body(postListResponseDtos);
     }
 
-
     // 사전 글 스크랩순으로 16개 조회 (메인페이지)
     @GetMapping("/api/main/post/scrap")
     public ResponseEntity<List<PostScrapSortResponseDto>> getPosts(){

@@ -9,7 +9,5 @@ import java.util.Optional;
 
 public interface PostCommentLikeRepository extends JpaRepository<PostCommentLike, Long> {
 
-    Optional<PostCommentLike> findByUserAndPostComment(User user, PostComment postComment);
-
     PostCommentLike findByPostCommentAndUserId(PostComment postComment, Long userId);
 }

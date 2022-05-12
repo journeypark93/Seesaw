@@ -9,24 +9,25 @@ import javax.persistence.*;
 
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class PostImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
-    private String postImages;
+    @Column
+    private String postImage;
 
-    @ManyToOne //(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "postid", nullable = false)
     private Post post;
 
-    public PostImage(String postImages, Post post){
-        this.postImages = postImages;
+
+    public PostImage(String postImage, Post post){
+        this.postImage = postImage;
         this.post = post;
     }
 

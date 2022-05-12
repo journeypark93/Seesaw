@@ -15,12 +15,13 @@ import java.util.List;
 @NoArgsConstructor
 
 public class PostCommentRequestDto {
-    private String nickname;
-    List<ProfileListDto> ProfileImages;
-    private String comment;
-    private Long CommentLikeCount;
+
     private boolean commentLikeStatus;
+    private String nickname;
+    private String comment;
     private String commentTime;
+    private Long CommentLikeCount;
+    List<ProfileListDto> ProfileImages;
 
 
     public PostCommentRequestDto(PostComment postComment) {

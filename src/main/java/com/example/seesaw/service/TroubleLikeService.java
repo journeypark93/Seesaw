@@ -23,10 +23,6 @@ public class TroubleLikeService {
         TroubleComment troubleComment = troubleCommentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 댓글이 없습니다.")
         );
-        //본인의 글에는 좋아요 누를 수 없도록 설정~~~
-//        if(userId.equals(troubleComment.getTrouble().getUser().getId())){
-//            throw new IllegalArgumentException("본인의 글에 좋아요를 누를 수 없어요!");
-//        }
 
         TroubleLike savedLike = troubleLikeRepository.findByTroubleCommentAndUserId(troubleComment, userId);
 
@@ -52,11 +48,6 @@ public class TroubleLikeService {
         );
 
         TroubleLike savedLike = troubleLikeRepository.findByTroubleCommentAndUserId(troubleComment, userId);
-
-        if(savedLike != null){
-            return true;
-        } else{
-            return false;
-        }
+        return savedLike != null;
     }
 }

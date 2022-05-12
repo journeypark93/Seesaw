@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MbtiRequestDto {
+
     private String energy;
     private String insight;
     private String judgement;

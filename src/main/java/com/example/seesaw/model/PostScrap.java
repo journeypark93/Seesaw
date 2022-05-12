@@ -27,6 +27,7 @@ public class PostScrap {
     @JoinColumn(name = "postId")
     private Post post;
 
+
     public PostScrap(User user, Post post) {
         this.user = user;
         this.post = post;

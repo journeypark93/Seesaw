@@ -3,7 +3,6 @@ package com.example.seesaw.service;
 import com.example.seesaw.dto.*;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
-import com.example.seesaw.security.UserDetailsImpl;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -63,7 +62,7 @@ public class PostService {
         }
 
         //post 저장
-        Post post = new Post(title, contents, videoUrl, generation, user, 0);
+        Post post = new Post(title, contents, videoUrl, generation, user, 0L);
         postRepository.save(post);
 
         //이미지 URL 저장하기
@@ -180,13 +179,6 @@ public class PostService {
         return postDetailResponseDto;
     }
 
-    // 현재 사용자 정보(토큰에 있는 정보를 활용?!) //https://00hongjun.github.io/spring-security/securitycontextholder/ 참고.
-    private User getCurrentUser() {
-        String nickname = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByUsername(nickname)
-                .orElseThrow(() -> new RuntimeException("Error : User is not found"));
-    }
-
 
     public PostResponseDto postTagAndImages(Long postId) {
 
@@ -201,13 +193,10 @@ public class PostService {
         }
 
         List<PostImage> postImages = postImageRepository.findAllByPostId(postId);
-        //기본 이미지 받으면 post_image table 에 1~370번까지 기본이미지 넣고 살리기
-//        if (postImages.isEmpty()){
-//            throw new IllegalArgumentException("해당하는 이미지가 없습니다.");
-//        }
+
         List<String> postImageList = new ArrayList<>();
         for(PostImage postImage : postImages){
-            postImageList.add(postImage.getPostImages());
+            postImageList.add(postImage.getPostImage());
         }
 
         return new PostResponseDto(post, postImageList, postTagList);
@@ -252,7 +241,7 @@ public class PostService {
             List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
             String postImageUrl = "";
             for (PostImage postImage : postImages) {
-                postImageUrl = postImage.getPostImages();
+                postImageUrl = postImage.getPostImage();
             }
             postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
             Collections.reverse(postListResponseDtos);
@@ -270,14 +259,7 @@ public class PostService {
         for (Post post: posts) {
             // postId 에 해당하는 post image 를 가져온다.
             List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
-            String imageUrl = "";
-            for (PostImage postImage: postImages
-                 ) {
-                // 하나만 뽑아서 break
-                imageUrl = postImage.getPostImages();
-                break;
-            }
-            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post, imageUrl));
+            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post, postImages.get(0).getPostImage()));
         }
 
         return postScrapSortResponseDtos;
@@ -299,7 +281,7 @@ public class PostService {
                 for (PostImage postImage: postImages
                 ) {
                     // 하나만 뽑아서 break
-                    imageUrl = postImage.getPostImages();
+                    imageUrl = postImage.getPostImage();
                     break;
                 }
                 postScrapSortResponseDtos.add(new PostScrapSortResponseDto(postPage, imageUrl));
@@ -307,6 +289,7 @@ public class PostService {
         }
         return postScrapSortResponseDtos;
     }
+
     // 9개 단어 최신순으로 단어 메인 리스트 페이지 조회
     public List<PostListResponseDto> findMainListPosts(){
         List<Post> posts = postRepository.findTop9ByOrderByCreatedAtDesc();
@@ -316,7 +299,7 @@ public class PostService {
             List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
             String postImageUrl = "";
             for (PostImage postImage : postImages) {
-                postImageUrl = postImage.getPostImages();
+                postImageUrl = postImage.getPostImage();
             }
             postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
             Collections.reverse(postListResponseDtos);

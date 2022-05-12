@@ -6,6 +6,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 public class Crossword {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
