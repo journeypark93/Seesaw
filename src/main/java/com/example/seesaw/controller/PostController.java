@@ -92,13 +92,21 @@ public class PostController {
     }
 
 
-    // 사전 글 전체 조회 (메인페이지)
-    @GetMapping("/api/main")
+    // 사전 글 scrap순 조회 (메인페이지)
+    @GetMapping("/api/main/post/scrap")
     public ResponseEntity<List<PostScrapSortResponseDto>> getPosts(){
         List<PostScrapSortResponseDto> postAllResponseDtos = postService.findAllPosts();
 
         return ResponseEntity.ok()
                 .body(postAllResponseDtos);
+    }
+
+    // 사전 글 scrap순 조회 (메인페이지)
+    @GetMapping("/api/main/post/random")
+    public ResponseEntity<List<PostScrapSortResponseDto>> getRandomPosts(){
+        List<PostScrapSortResponseDto> randomPostsResponseDtos = postService.findRandomPosts();
+        return ResponseEntity.ok()
+                .body(randomPostsResponseDtos);
     }
 
 }

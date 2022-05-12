@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Optional;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -21,5 +23,4 @@ public class PostScrapSortResponseDto {
         this.title = post.getTitle();
         this.scrapCount = post.getScrapCount();
     }
-
 }

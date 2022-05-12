@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Builder
 @RequiredArgsConstructor
@@ -187,18 +185,16 @@ public class PostService {
         );
 
         List<PostTag> postTags = postTagRepository.findAllByPostId(postId);
-        if (postTags.isEmpty()){
-            throw new IllegalArgumentException("해당하는 태그가 없습니다.");
-        }
         List<String> postTagList = new ArrayList<>();
         for(PostTag postTag : postTags){
             postTagList.add(postTag.getTagName());
         }
 
         List<PostImage> postImages = postImageRepository.findAllByPostId(postId);
-        if (postImages.isEmpty()){
-            throw new IllegalArgumentException("해당하는 이미지가 없습니다.");
-        }
+        //기본 이미지 받으면 post_image table 에 1~370번까지 기본이미지 넣고 살리기
+//        if (postImages.isEmpty()){
+//            throw new IllegalArgumentException("해당하는 이미지가 없습니다.");
+//        }
         List<String> postImageList = new ArrayList<>();
         for(PostImage postImage : postImages){
             postImageList.add(postImage.getPostImages());
@@ -248,4 +244,18 @@ public class PostService {
         return postScrapSortResponseDtos;
     }
 
+    public List<PostScrapSortResponseDto> findRandomPosts() {
+        List<PostScrapSortResponseDto> postScrapSortResponseDtos = new ArrayList<>();
+        //게시글의 개수를 구한다.
+        long postCount = postRepository.count();
+        // 가져온 개수 중 랜덤한 하나의 인덱스를 뽑는다.
+        int idx = (int)(Math.random() * postCount);
+        // 페이징하여 하나만 추출해낸다.
+        Page<Post> postPage = postRepository.findAll(PageRequest.of(idx, 1));
+        if (postPage.hasContent()) {
+            Post post = postPage.getContent().get(0);
+            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post));
+        }
+        return postScrapSortResponseDtos;
+    }
 }
