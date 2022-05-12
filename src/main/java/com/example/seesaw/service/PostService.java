@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 @Builder
 @RequiredArgsConstructor
@@ -187,18 +188,16 @@ public class PostService {
         );
 
         List<PostTag> postTags = postTagRepository.findAllByPostId(postId);
-        if (postTags.isEmpty()){
-            throw new IllegalArgumentException("해당하는 태그가 없습니다.");
-        }
         List<String> postTagList = new ArrayList<>();
         for(PostTag postTag : postTags){
             postTagList.add(postTag.getTagName());
         }
 
         List<PostImage> postImages = postImageRepository.findAllByPostId(postId);
-        if (postImages.isEmpty()){
-            throw new IllegalArgumentException("해당하는 이미지가 없습니다.");
-        }
+        //기본 이미지 받으면 post_image table 에 1~370번까지 기본이미지 넣고 살리기
+//        if (postImages.isEmpty()){
+//            throw new IllegalArgumentException("해당하는 이미지가 없습니다.");
+//        }
         List<String> postImageList = new ArrayList<>();
         for(PostImage postImage : postImages){
             postImageList.add(postImage.getPostImages());
@@ -277,6 +276,30 @@ public class PostService {
         return postScrapSortResponseDtos;
     }
 
+    public List<PostScrapSortResponseDto> findRandomPosts() {
+        List<PostScrapSortResponseDto> postScrapSortResponseDtos = new ArrayList<>();
+        //게시글의 개수를 구한다.
+        long postCount = postRepository.count();
+        // 가져온 개수 중 랜덤한 하나의 인덱스를 뽑는다.
+        int idx = (int)(Math.random() * postCount)/2;
+        // 페이징하여 하나만 추출해낸다.
+        Page<Post> postPages = postRepository.findAll(PageRequest.of(idx, 2));
+        if (postPages.hasContent()) {
+            for(Post postPage:postPages){
+                // postId 에 해당하는 post image 를 가져온다.
+                List<PostImage> postImages = postImageRepository.findAllByPostId(postPage.getId());
+                String imageUrl = "";
+                for (PostImage postImage: postImages
+                ) {
+                    // 하나만 뽑아서 break
+                    imageUrl = postImage.getPostImages();
+                    break;
+                }
+                postScrapSortResponseDtos.add(new PostScrapSortResponseDto(postPage, imageUrl));
+            }
+        }
+        return postScrapSortResponseDtos;
+    }
     // 9개 단어 최신순으로 단어 메인 리스트 페이지 조회
     public List<PostListResponseDto> findMainListPosts(){
         List<Post> posts = postRepository.findTop9ByOrderByCreatedAtDesc();
