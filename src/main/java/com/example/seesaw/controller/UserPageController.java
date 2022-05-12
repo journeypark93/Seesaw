@@ -53,7 +53,7 @@ public class UserPageController {
     }
 
     // 내가 스크랩한 글 조회
-    @GetMapping("api/mypage/scraps")
+    @GetMapping("/api/mypage/scraps")
     public ResponseEntity<List<MyScrapResponseDto>> getMyScrapPage(@AuthenticationPrincipal UserDetailsImpl userDetails){
         List<MyScrapResponseDto> myScrapResponseDto = userPageService.getMyScraps(userDetails.getUser());
 
@@ -62,7 +62,7 @@ public class UserPageController {
     }
 
     // 내가 등록한 고민글 조회
-    @GetMapping("api/mypage/troubles")
+    @GetMapping("/api/mypage/troubles")
     public ResponseEntity<List<MyTroublesResponseDto>> getMyTroublePage(@AuthenticationPrincipal UserDetailsImpl userDetails){
         List<MyTroublesResponseDto> myTroublesResponseDtos = userPageService.getMyTroubles(userDetails.getUser());
 
