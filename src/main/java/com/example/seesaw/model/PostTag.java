@@ -25,6 +25,7 @@ public class PostTag {
     @JoinColumn(name = "postid", nullable = false)
     private Post post;
 
+
     public PostTag(String tagName, Post post){
         this.tagName = tagName;
         this.post = post;

@@ -30,6 +30,7 @@ public class TroubleComment extends Timestamped{
     @Column
     private Long likeCount;
 
+
     public TroubleComment(Trouble trouble, TroubleCommentRequestDto troubleCommentRequestDto) {
         this.trouble = trouble;
         this.comment = troubleCommentRequestDto.getComment();

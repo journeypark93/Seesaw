@@ -9,7 +9,6 @@ import java.time.temporal.ChronoUnit;
 public class ConvertTimeService {
 
 
-
     public static final int SEC = 60;
     public static final int MIN = 60;
     public static final int HOUR = 24;
@@ -17,7 +16,9 @@ public class ConvertTimeService {
     public static final int MONTH = 12;
 
     public String convertLocaldatetimeToTime(LocalDateTime localDateTime) {
+
         LocalDateTime now = LocalDateTime.now();
+
 
         long diffTime = localDateTime.until(now, ChronoUnit.SECONDS); // now보다 이후면 +, 전이면 -
 
@@ -25,18 +26,22 @@ public class ConvertTimeService {
         if (diffTime < SEC){
             return diffTime + "초전";
         }
+
         diffTime = diffTime / SEC;
         if (diffTime < MIN) {
             return diffTime + "분 전";
         }
+
         diffTime = diffTime / MIN;
         if (diffTime < HOUR) {
             return diffTime + "시간 전";
         }
+
         diffTime = diffTime / HOUR;
         if (diffTime < DAY) {
             return diffTime + "일 전";
         }
+
         diffTime = diffTime / DAY;
         if (diffTime < MONTH) {
             return diffTime + "개월 전";

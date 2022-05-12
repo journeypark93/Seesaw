@@ -9,14 +9,16 @@ import java.util.List;
 @Setter
 @Getter
 public class TroubleCommentRequestDto {
+
     private String nickname;
-    List<ProfileListDto> ProfileImages;
     private String comment;
     private Long likeCount;
+    List<ProfileListDto> ProfileImages;
 
     public TroubleCommentRequestDto(TroubleComment troubleComment) {
     this.nickname = troubleComment.getNickname();
     this.comment = troubleComment.getComment();
     this.likeCount = troubleComment.getLikeCount();
     }
+
 }

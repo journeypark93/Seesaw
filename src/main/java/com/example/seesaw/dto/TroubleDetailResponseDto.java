@@ -12,25 +12,27 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TroubleDetailResponseDto {
+
     private String nickname;
-    private List<ProfileListDto> profileImages;
+
     private String title;
     private String contents;
     private String question;
     private String answer;
-    private List<String> tagName;
-    private List<String> imageUrls;
+    private String postTime;
     private Long views;
     private Long commentCount;
-    private String postTime;
+    private List<String> tagNames;          // tagName -> tagNames
+    private List<String> troubleImages;     // imageUrls -> troubleImages
+    private List<ProfileListDto> profileImages;
     private List<TroubleCommentRequestDto> troubleComments;
 
-    public TroubleDetailResponseDto(TroubleResponseDto troubleResponseDto) {
-        this.title = troubleResponseDto.getTitle();
-        this.contents = troubleResponseDto.getContents();
-        this.question = troubleResponseDto.getQuestion();
-        this.answer = troubleResponseDto.getAnswer();
-        this.tagName = troubleResponseDto.getTagName();
-        this.imageUrls = troubleResponseDto.getImageUrls();
+    public TroubleDetailResponseDto(TroubleDto troubleDto) {
+        this.title = troubleDto.getTitle();
+        this.contents = troubleDto.getContents();
+        this.question = troubleDto.getQuestion();
+        this.answer = troubleDto.getAnswer();
+        this.tagNames = troubleDto.getTagNames();
+        this.troubleImages = troubleDto.getTroubleImages();
     }
 }

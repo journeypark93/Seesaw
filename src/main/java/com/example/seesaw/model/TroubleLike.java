@@ -12,6 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 public class TroubleLike{
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;

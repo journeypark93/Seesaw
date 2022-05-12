@@ -8,6 +8,8 @@ import java.util.List;
 
 
 public interface CrosswordRepository extends JpaRepository<Crossword, Long> {
+
     //게임용
     List<Crossword> findAllById(Long postId);
+
 }
