@@ -6,27 +6,30 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Optional;
+import java.util.List;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostScrapSortResponseDto {
+public class PostListResponseDto {
 
     private Long postId;
     private String title;
     private String contents;
-    private String imageUrl;
     private String generation;
+    private Long views;
     private int scrapCount;
+    private String postImages;
 
-    public PostScrapSortResponseDto(Post post, String imageUrl){
+    public PostListResponseDto(Post post, String postImages){
         this.postId = post.getId();
         this.title = post.getTitle();
-        this.contents = post.getContents();
-        this.imageUrl = imageUrl;
-        this.generation = post.getGeneration();
         this.scrapCount = post.getScrapCount();
+        this.contents = post.getContents();
+        this.generation = post.getGeneration();
+        this.views = post.getViews();
+        this.postImages = postImages;
     }
+
 }
