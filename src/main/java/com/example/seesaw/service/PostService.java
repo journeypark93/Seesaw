@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Builder
 @RequiredArgsConstructor
@@ -261,12 +262,22 @@ public class PostService {
         //게시글의 개수를 구한다.
         long postCount = postRepository.count();
         // 가져온 개수 중 랜덤한 하나의 인덱스를 뽑는다.
-        int idx = (int)(Math.random() * postCount);
+        int idx = (int)(Math.random() * postCount)/2;
         // 페이징하여 하나만 추출해낸다.
-        Page<Post> postPage = postRepository.findAll(PageRequest.of(idx, 1));
-        if (postPage.hasContent()) {
-            Post post = postPage.getContent().get(0);
-            postScrapSortResponseDtos.add(new PostScrapSortResponseDto(post));
+        Page<Post> postPages = postRepository.findAll(PageRequest.of(idx, 2));
+        if (postPages.hasContent()) {
+            for(Post postPage:postPages){
+                // postId 에 해당하는 post image 를 가져온다.
+                List<PostImage> postImages = postImageRepository.findAllByPostId(postPage.getId());
+                String imageUrl = "";
+                for (PostImage postImage: postImages
+                ) {
+                    // 하나만 뽑아서 break
+                    imageUrl = postImage.getPostImages();
+                    break;
+                }
+                postScrapSortResponseDtos.add(new PostScrapSortResponseDto(postPage, imageUrl));
+            }
         }
         return postScrapSortResponseDtos;
     }

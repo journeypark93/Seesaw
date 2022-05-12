@@ -76,19 +76,13 @@ public class PostController {
                 .body(postDetailResponseDto);
     }
 
-    //단어장 스크랩
+    //단어장 스크랩, 스크랩취소
     @ApiOperation("단어장 스크랩")
     @PostMapping("/api/post/{postId}/scrap")
-    public ResponseEntity<String> scrapPost(@PathVariable Long postId) {
-        postScrapService.scrapPost(postId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @ApiOperation("단어장 스크랩 취소")
-    @DeleteMapping("/api/post/{postId}/scrap")
-    public ResponseEntity<String> unScrapPost(@PathVariable Long postId) {
-        postScrapService.unScrapPost(postId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Boolean> scrapPost(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boolean sracpStatus = postScrapService.scrapPost(postId, userDetails.getUser());
+        return ResponseEntity.ok()
+                .body(sracpStatus);
     }
 
     // 사전 글 스크랩순으로 16개 조회 (메인페이지)
@@ -100,7 +94,7 @@ public class PostController {
                 .body(postAllResponseDtos);
     }
 
-    // 사전 글 scrap순 조회 (메인페이지)
+    // 사전 글 렘덤 2개 조회 (메인페이지)
     @GetMapping("/api/main/post/random")
     public ResponseEntity<List<PostScrapSortResponseDto>> getRandomPosts(){
         List<PostScrapSortResponseDto> randomPostsResponseDtos = postService.findRandomPosts();
