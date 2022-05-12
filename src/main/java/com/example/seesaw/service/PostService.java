@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Builder
@@ -235,6 +236,24 @@ public class PostService {
                 .build();
     }
 
+
+    // 최신순으로 단어 리스트 페이지 조회
+    public List<PostListResponseDto> findListPosts(){
+        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
+        List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
+        for (Post post: posts) {
+
+            List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
+            String postImageUrl = "";
+            for (PostImage postImage : postImages) {
+                postImageUrl = postImage.getPostImages();
+            }
+            postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
+            Collections.reverse(postListResponseDtos);
+        }
+        return postListResponseDtos;
+    }
+
     // 스크랩 순으로 매인페이지 조회
     public List<PostScrapSortResponseDto> findAllPosts(){
         // 스크랩 수가 많은 순서대로 16개의 post를 담는다.
@@ -256,6 +275,23 @@ public class PostService {
         }
 
         return postScrapSortResponseDtos;
+    }
+
+    // 9개 단어 최신순으로 단어 메인 리스트 페이지 조회
+    public List<PostListResponseDto> findMainListPosts(){
+        List<Post> posts = postRepository.findTop9ByOrderByCreatedAtDesc();
+        List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
+        for (Post post: posts) {
+
+            List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
+            String postImageUrl = "";
+            for (PostImage postImage : postImages) {
+                postImageUrl = postImage.getPostImages();
+            }
+            postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
+            Collections.reverse(postListResponseDtos);
+        }
+        return postListResponseDtos;
     }
 
 }

@@ -1,9 +1,7 @@
 package com.example.seesaw.controller;
 
 
-import com.example.seesaw.dto.PostDetailResponseDto;
-import com.example.seesaw.dto.PostRequestDto;
-import com.example.seesaw.dto.PostScrapSortResponseDto;
+import com.example.seesaw.dto.*;
 import com.example.seesaw.repository.PostRepository;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.PostScrapService;
@@ -32,7 +30,7 @@ public class PostController {
     @PostMapping(value = "/api/post", headers = ("content-type=multipart/*"))
     public ResponseEntity<String> createPost(
             @RequestPart("postRequestDto") PostRequestDto requestDto,
-            @RequestPart(value = "files", required = false) ArrayList<MultipartFile> files,
+            @RequestPart("files") ArrayList<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         postService.createPost(requestDto, files, userDetails.getUser());
@@ -67,9 +65,11 @@ public class PostController {
                 .body("고민글 삭제완료");
     }
 
-    //단어 상세조회
+    //단어장 상세조회
     @GetMapping("api/post/{postId}/detail")
-    public ResponseEntity<PostDetailResponseDto> findDetailPost(@PathVariable Long postId, @RequestParam(value = "page") int page){
+    public ResponseEntity<PostDetailResponseDto> findDetailPost(
+            @RequestParam(value = "page") int page,
+            @PathVariable Long postId){
         PostDetailResponseDto postDetailResponseDto = postService.findDetailPost(postId, page);
         return ResponseEntity.ok()
                 .body(postDetailResponseDto);
@@ -90,6 +90,16 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    // 사전 리스트 전체 조회(리스트 페이지)
+    @GetMapping("/api/post/list")
+    public ResponseEntity<List<PostListResponseDto>> getListPosts(){
+        List<PostListResponseDto> postListResponseDtos = postService.findListPosts();
+
+        return ResponseEntity.ok()
+                .body(postListResponseDtos);
+    }
+
+
     // 사전 글 스크랩순으로 16개 조회 (메인페이지)
     @GetMapping("/api/main/scrap")
     public ResponseEntity<List<PostScrapSortResponseDto>> getPosts(){
@@ -98,5 +108,17 @@ public class PostController {
         return ResponseEntity.ok()
                 .body(postAllResponseDtos);
     }
+
+    // 사전 글 스크랩순으로 9개 조회 (메인페이지)
+    @GetMapping("/api/main/postList")
+    public ResponseEntity<List<PostListResponseDto>> getMainListPosts(){
+        List<PostListResponseDto> postListResponseDtos = postService.findMainListPosts();
+
+        return ResponseEntity.ok()
+                .body(postListResponseDtos);
+    }
+
+
+
 
 }
