@@ -73,8 +73,9 @@ public class PostController {
     @GetMapping("api/post/{postId}/detail")
     public ResponseEntity<PostDetailResponseDto> findDetailPost(
             @RequestParam(value = "page") int page,
-            @PathVariable Long postId){
-        PostDetailResponseDto postDetailResponseDto = postService.findDetailPost(postId, page);
+            @PathVariable Long postId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        PostDetailResponseDto postDetailResponseDto = postService.findDetailPost(postId, page, userDetails.getUser());
         return ResponseEntity.ok()
                 .body(postDetailResponseDto);
     }

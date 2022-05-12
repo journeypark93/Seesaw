@@ -26,6 +26,7 @@ public class PostDetailResponseDto {
     private Long views;
     private Long commentCount;
     private String postUpdateTime;
+    private boolean scrapStatus;
     private List<PostCommentRequestDto> postComments;
     private int scrapCount;
     private String nickname;
