@@ -91,8 +91,7 @@ public class PostController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    // 사전 글 scrap순 조회 (메인페이지)
+    // 사전 글 스크랩순으로 16개 조회 (메인페이지)
     @GetMapping("/api/main/post/scrap")
     public ResponseEntity<List<PostScrapSortResponseDto>> getPosts(){
         List<PostScrapSortResponseDto> postAllResponseDtos = postService.findAllPosts();
