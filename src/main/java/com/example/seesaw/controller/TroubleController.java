@@ -2,8 +2,7 @@ package com.example.seesaw.controller;
 
 import com.example.seesaw.dto.TroubleAllResponseDto;
 import com.example.seesaw.dto.TroubleDetailResponseDto;
-import com.example.seesaw.dto.TroubleRequestDto;
-import com.example.seesaw.dto.TroubleResponseDto;
+import com.example.seesaw.dto.TroubleDto;
 import com.example.seesaw.repository.TroubleRepository;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.TroubleService;
@@ -25,31 +24,31 @@ public class TroubleController {
     //고민글 등재
     @PostMapping("/api/trouble")
     public ResponseEntity<String> registerTrouble(
-            @RequestPart(value = "troubleRequestDto") TroubleRequestDto troubleRequestDto,
+            @RequestPart(value = "troubleRequestDto") TroubleDto troubleDto,
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        troubleService.registerTrouble(troubleRequestDto, files, userDetails.getUser());
+        troubleService.registerTrouble(troubleDto, files, userDetails.getUser());
         return ResponseEntity.ok()
                 .body("고민글 등재완료");
     }
 
     //고민글 수정 시 고민글 조회
     @GetMapping("api/trouble/{troubleId}")
-    public ResponseEntity<TroubleResponseDto> updateTrouble(@PathVariable Long troubleId){
-        TroubleResponseDto troubleResponseDto = troubleService.findTrouble(troubleId);
+    public ResponseEntity<TroubleDto> updateTrouble(@PathVariable Long troubleId){
+        TroubleDto troubleDto = troubleService.findTrouble(troubleId);
         return ResponseEntity.ok()
-                .body(troubleResponseDto);
+                .body(troubleDto);
     }
     //고민글 수정
     @PutMapping("api/trouble/{troubleId}")
     public ResponseEntity<String> updateTrouble(
-            @RequestPart(value = "troubleRequestDto") TroubleRequestDto troubleRequestDto,
+            @RequestPart(value = "troubleRequestDto") TroubleDto troubleDto,
             @RequestPart(value = "files") List<MultipartFile> files,
             @PathVariable Long troubleId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
 
-        troubleService.updateTrouble(troubleRequestDto, files, troubleId, userDetails.getUser());
+        troubleService.updateTrouble(troubleDto, files, troubleId, userDetails.getUser());
         return ResponseEntity.ok()
                 .body("고민글 수정완료");
     }

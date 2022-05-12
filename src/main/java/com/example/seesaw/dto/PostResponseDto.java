@@ -6,17 +6,19 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 public class PostResponseDto {
+
+    private String user;
     private String title;
     private String contents;
-    private List<String> postImages;
-    private List<String> tagNames;
     private String videoUrl;
     private String generation;
-    private String user;
+    private List<String> tagNames;
+    private List<String> postImages;
 
     public PostResponseDto(Post post, List<String> postImages, List<String> tagNames) {
         this.title = post.getTitle();

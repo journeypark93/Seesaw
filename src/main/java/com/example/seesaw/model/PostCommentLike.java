@@ -24,6 +24,7 @@ public class PostCommentLike extends Timestamped{
     @JoinColumn(name = "userId")
     private User user;
 
+
     public PostCommentLike(PostComment postComment, User user) {
         this.postComment = postComment;
         this.user = user;

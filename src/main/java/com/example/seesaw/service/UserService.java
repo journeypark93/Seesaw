@@ -178,13 +178,13 @@ public class UserService {
             UserProfile userProfile = userProfileRepository.findById(num.getUserProfile().getId()).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 userProfile 이 없습니다."));
             if (userProfile.getCategory().equals("faceUrl")){
-                ProfileListDto faceUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getImageUrl());
+                ProfileListDto faceUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getUserProfileImage());
                 profileListDtos.add(faceUrl);
             } else if(userProfile.getCategory().equals("accessoryUrl")){
-                ProfileListDto accessoryUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getImageUrl());
+                ProfileListDto accessoryUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getUserProfileImage());
                 profileListDtos.add(accessoryUrl);
             } else if(userProfile.getCategory().equals("backgroundUrl")){
-                ProfileListDto backgroundUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getImageUrl());
+                ProfileListDto backgroundUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getUserProfileImage());
                 profileListDtos.add(backgroundUrl);
             }
         }

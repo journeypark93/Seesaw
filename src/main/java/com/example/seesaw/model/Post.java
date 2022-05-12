@@ -33,7 +33,7 @@ public class Post extends Timestamped {
     private String generation;
 
     @Column
-    private int scrapCount;
+    private Long scrapCount;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Column
@@ -50,7 +50,7 @@ public class Post extends Timestamped {
     private Long views = 0L;
 
 
-    public Post(String title, String contents, String videoUrl, String generation, User user, int scrapCount) {
+    public Post(String title, String contents, String videoUrl, String generation, User user, Long scrapCount) {
         this.title = title;
         this.contents = contents;
         this.videoUrl = videoUrl;
@@ -58,6 +58,7 @@ public class Post extends Timestamped {
         this.user = user;
         this.scrapCount = scrapCount;
     }
+
 
     @Builder
     public Post(Long id, String title, String contents, String generation) {
