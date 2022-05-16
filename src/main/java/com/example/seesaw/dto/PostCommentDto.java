@@ -12,19 +12,18 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-
-public class PostCommentRequestDto {
+public class PostCommentDto {
 
     private Long commentId;
     private boolean commentLikeStatus;
     private String nickname;
     private String comment;
     private String commentTime;
-    private Long CommentLikeCount;
+    private Long commentLikeCount;
     List<ProfileListDto> ProfileImages;
 
 
-    public PostCommentRequestDto(PostComment postComment) {
+    public PostCommentDto(PostComment postComment) {
         this.commentId = postComment.getId();
         this.nickname = postComment.getNickname();
         this.comment = postComment.getComment();

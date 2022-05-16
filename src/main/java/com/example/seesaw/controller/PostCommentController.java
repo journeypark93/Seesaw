@@ -19,6 +19,7 @@ public class PostCommentController {
     private final PostCommentService postCommentService;
     private final PostCommentLikeService postCommentLikeService;
 
+    // 댓글 작성
     @PostMapping("/api/post/comment/{postId}")
     public ResponseEntity<PostCommentDto> registerPostComment(
             @PathVariable(name = "postId") Long postId,
@@ -30,6 +31,7 @@ public class PostCommentController {
                 .body(postCommentDto);
     }
 
+    // 댓글 수정
     @PutMapping("/api/post/comment/{commentId}")
     public ResponseEntity<PostCommentDto> updatePostComment(
             @PathVariable Long commentId,
@@ -41,6 +43,7 @@ public class PostCommentController {
                 .body(postCommentDto);
     }
 
+    //댓글 삭제
     @DeleteMapping("/api/post/comment/{commentId}")
     public ResponseEntity<String> deletePostComment(
             @PathVariable Long commentId,

@@ -2,17 +2,15 @@ package com.example.seesaw.controller;
 
 
 import com.example.seesaw.dto.PostDetailResponseDto;
+import com.example.seesaw.dto.PostListResponseDto;
 import com.example.seesaw.dto.PostRequestDto;
 import com.example.seesaw.dto.PostScrapSortResponseDto;
-import com.example.seesaw.dto.TroubleDetailResponseDto;
-import com.example.seesaw.dto.*;
 import com.example.seesaw.repository.PostRepository;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.PostScrapService;
 import com.example.seesaw.service.PostService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -115,7 +113,7 @@ public class PostController {
                 .body(randomPostsResponseDtos);
     }
 
-    // 사전 글 스크랩순으로 9개 조회 (메인페이지)
+    // 사전 글 최신순으로 9개 조회 (메인페이지)
     @GetMapping("/api/main/post/list")
     public ResponseEntity<List<PostListResponseDto>> getMainListPosts(){
         List<PostListResponseDto> postListResponseDtos = postService.findMainListPosts();
