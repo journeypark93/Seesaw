@@ -15,31 +15,36 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/trouble/comment")
 public class TroubleCommentController {
 
+
     private final TroubleCommentService troubleCommentService;
     private final TroubleCommentLikeService troubleCommentLikeService;
 
-
-
-    @PostMapping("/{troubleId}")
-    public ResponseEntity<String> registerComment(
+    //고민글 댓글 등록
+    @PostMapping("/api/trouble/comment/{troubleId}")
+    public ResponseEntity<TroubleCommentRequestDto> registerComment(
             @PathVariable(name="troubleId") Long troubleId,
             @RequestBody TroubleCommentRequestDto troubleCommentRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        troubleCommentService.registerComment(troubleId, troubleCommentRequestDto, userDetails.getUser());
+
+        TroubleCommentRequestDto troubleCommentDto = troubleCommentService.registerComment(troubleId, troubleCommentRequestDto, userDetails.getUser());
+
         return ResponseEntity.ok()
-                .body("고민글 댓글등록 완료");
+                .body(troubleCommentDto);
     }
-    
+
+    // 고민글 댓글 수정
     @PutMapping("/{commentId}")
-    public ResponseEntity<String> updateComment(
+    public ResponseEntity<TroubleCommentRequestDto> updateComment(
             @PathVariable Long commentId,
             @RequestBody TroubleCommentRequestDto troubleCommentRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        troubleCommentService.updateComment(commentId, troubleCommentRequestDto, userDetails.getUser());
+        TroubleCommentRequestDto troubleCommentDto = troubleCommentService.updateComment(commentId, troubleCommentRequestDto, userDetails.getUser());
+
         return ResponseEntity.ok()
-                .body("고민글 댓글수정 완료");
+                .body(troubleCommentDto);
     }
 
+    // 고민글 댓글 삭제
     @DeleteMapping("/{commentId}")
     public ResponseEntity<String> deleteComment(
             @PathVariable Long commentId,
@@ -53,6 +58,5 @@ public class TroubleCommentController {
     public boolean getGoods(@PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return troubleCommentLikeService.getLikes(commentId, userDetails.getUser());
     }
-
 
 }

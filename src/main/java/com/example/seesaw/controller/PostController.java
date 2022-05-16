@@ -113,7 +113,7 @@ public class PostController {
                 .body(randomPostsResponseDtos);
     }
 
-    // 사전 글 스크랩순으로 9개 조회 (메인페이지)
+    // 사전 글 최신순으로 9개 조회 (메인페이지)
     @GetMapping("/api/main/post/list")
     public ResponseEntity<List<PostListResponseDto>> getMainListPosts(){
         List<PostListResponseDto> postListResponseDtos = postService.findMainListPosts();

@@ -29,6 +29,7 @@ public class PostCommentService {
                 () -> new IllegalStateException("해당 게시글이 없습니다."));
         PostComment postComment = new PostComment(savedPost, requestDto);
         postCommentRepository.save(postComment);
+        // 댓글 response
         return postService.getPostCommentDto(user, postComment);
     }
 

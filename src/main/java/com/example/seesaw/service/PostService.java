@@ -92,10 +92,8 @@ public class PostService {
                 () -> new IllegalArgumentException("해당 단어장이 없습니다.")
         );
 
-
         //post update
         post.update(requestDto, user);
-
 
         // 이미지 수정작업
         List<String> imagePaths = new ArrayList<>();
@@ -173,6 +171,7 @@ public class PostService {
         String postTime = convertTimeService.convertLocaldatetimeToTime(post.getCreatedAt());
         postDetailResponseDto.setPostUpdateTime(postTime);
         postDetailResponseDto.setViews(post.getViews());
+        postDetailResponseDto.setScrapCount(post.getScrapCount());
         post.setViews(post.getViews()+1);
         postRepository.save(post);
         return postDetailResponseDto;
@@ -248,7 +247,7 @@ public class PostService {
     }
 
 
-    // 최신순으로 단어 리스트 페이지 조회
+    // 최신순으로 단어 전체 리스트 페이지 조회
     public List<PostListResponseDto> findListPosts(){
         List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
