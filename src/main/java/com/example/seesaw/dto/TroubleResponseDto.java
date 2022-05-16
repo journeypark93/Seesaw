@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TroubleAllResponseDto {
+public class TroubleResponseDto {
 
     private Long id;
     private String nickname;
@@ -23,16 +23,16 @@ public class TroubleAllResponseDto {
     private Long views;
     private Long commentCount;
     private List<String> tagNames;
-    private List<String> troubleImages;     // imageUrls -> troubleImages
+    private String troubleImages;     // imageUrls -> troubleImages
     private List<ProfileListDto> profileImages;
 
 
-    public TroubleAllResponseDto(TroubleDto troubleDto) {
+    public TroubleResponseDto(TroubleDto troubleDto) {
         this.title = troubleDto.getTitle();
         this.contents = troubleDto.getContents();
         this.question = troubleDto.getQuestion();
         this.answer = troubleDto.getAnswer();
         this.tagNames = troubleDto.getTagNames();
-        this.troubleImages = troubleDto.getTroubleImages();
+        this.troubleImages = troubleDto.getTroubleImages().get(0);
     }
 }

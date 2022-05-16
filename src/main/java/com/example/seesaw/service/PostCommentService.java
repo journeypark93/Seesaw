@@ -17,8 +17,6 @@ public class PostCommentService {
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
-    private final ConvertTimeService convertTimeService;
     private final PostService postService;
 
     // 댓글 등록

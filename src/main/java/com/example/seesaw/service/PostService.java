@@ -143,7 +143,7 @@ public class PostService {
 
         // paging 처리
         Pageable pageable = PageRequest.of(page-1, 4);
-        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId,pageable);
+        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId, pageable);
 
         // 댓글 개수
         List<PostComment> postComments = postCommentRepository.findAllByPostId(postId);
@@ -253,13 +253,8 @@ public class PostService {
         List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
         for (Post post: posts) {
-
             List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
-            String postImageUrl = "";
-            for (PostImage postImage : postImages) {
-                postImageUrl = postImage.getPostImage();
-            }
-            postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
+            postListResponseDtos.add(new PostListResponseDto(post, postImages.get(0).getPostImage()));
         }
         return postListResponseDtos;
     }

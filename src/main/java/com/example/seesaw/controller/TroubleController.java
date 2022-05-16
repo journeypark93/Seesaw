@@ -1,6 +1,6 @@
 package com.example.seesaw.controller;
 
-import com.example.seesaw.dto.TroubleAllResponseDto;
+import com.example.seesaw.dto.TroubleResponseDto;
 import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleDto;
 import com.example.seesaw.repository.TroubleRepository;
@@ -72,17 +72,17 @@ public class TroubleController {
 
     //고민글 전체 조회(최근 작성 순)
     @GetMapping("/api/trouble/list")
-    public ResponseEntity<List<TroubleAllResponseDto>> findAllTroubles(){
-        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findAllTroubles();
+    public ResponseEntity<List<TroubleResponseDto>> findAllTroubles(){
+        List<TroubleResponseDto> troubleResponseDto = troubleService.findAllTroubles();
         return ResponseEntity.ok()
-                .body(troubleAllResponseDto);
+                .body(troubleResponseDto);
     }
 
     //고민글 전체 조회(조회수 순)
     @GetMapping("/api/main/trouble/list")
-    public ResponseEntity<List<TroubleAllResponseDto>> findViewTroubles(){
-        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findViewTroubles();
+    public ResponseEntity<List<TroubleResponseDto>> findViewTroubles(){
+        List<TroubleResponseDto> troubleResponseDto = troubleService.findViewTroubles();
         return ResponseEntity.ok()
-                .body(troubleAllResponseDto);
+                .body(troubleResponseDto);
     }
 }

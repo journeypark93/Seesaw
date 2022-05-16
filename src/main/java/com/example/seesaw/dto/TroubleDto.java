@@ -1,5 +1,6 @@
 package com.example.seesaw.dto;
 
+import com.example.seesaw.model.Trouble;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,4 +21,12 @@ public class TroubleDto {
     private List<String> tagNames;           // tagName -> tagNames
     private List<String> troubleImages;      // imageUrls -> troubleImages
 
+    public TroubleDto(Trouble trouble, List<String> troubleTagList, List<String> troubleImages) {
+        this.title = trouble.getTitle();
+        this.contents = trouble.getContents();
+        this.question = trouble.getQuestion();
+        this.answer = trouble.getAnswer();
+        this.tagNames = troubleTagList;
+        this.troubleImages = troubleImages;
+    }
 }
