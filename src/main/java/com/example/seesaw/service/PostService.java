@@ -135,7 +135,23 @@ public class PostService {
         );
         PostResponseDto postResponseDto = postTagAndImages(postId);
 
+
         PostDetailResponseDto postDetailResponseDto = getPostDetailResponseDto(user, post, postResponseDto);
+
+        PostDetailResponseDto postDetailResponseDto = new PostDetailResponseDto(postResponseDto);
+        postDetailResponseDto.setNickname(user.getNickname()); //로그인한 사용자의 닉네임
+        postDetailResponseDto.setTitle(post.getTitle());
+        postDetailResponseDto.setContents(post.getContents());
+        postDetailResponseDto.setGeneration(post.getGeneration());
+        postDetailResponseDto.setVideoUrl(post.getVideoUrl());
+        postDetailResponseDto.setProfileImages(userService.findUserProfiles(post.getUser()));
+        postDetailResponseDto.setLastNickname(post.getUser().getNickname()); //글을 마지막으로 작성한 사람의 닉네임
+        String postTime = convertTimeService.convertLocaldatetimeToTime(post.getCreatedAt());
+        postDetailResponseDto.setPostUpdateTime(postTime);
+        postDetailResponseDto.setViews(post.getViews());
+        post.setViews(post.getViews()+1);
+        postRepository.save(post);
+
 
         PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
         postDetailResponseDto.setScrapStatus(savedPostScrap != null);
