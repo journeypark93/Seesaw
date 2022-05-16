@@ -1,6 +1,7 @@
 package com.example.seesaw.dto;
 
 import com.example.seesaw.model.PostComment;
+import com.example.seesaw.model.TroubleComment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,17 +14,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class PostCommentRequestDto {
-
-    private boolean commentLikeStatus;
+public class PostCommentDto {
+    private Long commentId;
     private String nickname;
     private String comment;
     private String commentTime;
     private Long CommentLikeCount;
     List<ProfileListDto> ProfileImages;
+    private boolean commentLikeStatus;
 
 
-    public PostCommentRequestDto(PostComment postComment) {
+    public PostCommentDto(PostComment postComment) {
+        this.commentId = postComment.getId();
         this.nickname = postComment.getNickname();
         this.comment = postComment.getComment();
     }
