@@ -15,12 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/trouble/comment")
 public class TroubleCommentController {
 
-
     private final TroubleCommentService troubleCommentService;
     private final TroubleCommentLikeService troubleCommentLikeService;
 
     //고민글 댓글 등록
-    @PostMapping("/api/trouble/comment/{troubleId}")
+    @PostMapping("/{troubleId}")
     public ResponseEntity<TroubleCommentRequestDto> registerComment(
             @PathVariable(name="troubleId") Long troubleId,
             @RequestBody TroubleCommentRequestDto troubleCommentRequestDto,

@@ -5,6 +5,7 @@ import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleDto;
 import com.example.seesaw.repository.TroubleRepository;
 import com.example.seesaw.security.UserDetailsImpl;
+import com.example.seesaw.service.TroubleS3Service;
 import com.example.seesaw.service.TroubleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class TroubleController {
 
     private final TroubleService troubleService;
     private final TroubleRepository troubleRepository;
+    private final TroubleS3Service troubleS3Service;
 
     //고민글 등재
     @PostMapping("/api/trouble")
@@ -55,6 +57,7 @@ public class TroubleController {
     //고민글 삭제
     @DeleteMapping("/api/trouble/{troubleId}")
     public ResponseEntity<String> deleteTrouble(@PathVariable Long troubleId){
+        troubleS3Service.delete(troubleId, null);
         troubleRepository.deleteById(troubleId);
         return ResponseEntity.ok()
                 .body("고민글 삭제완료");

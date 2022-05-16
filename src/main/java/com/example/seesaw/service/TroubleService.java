@@ -1,9 +1,9 @@
 package com.example.seesaw.service;
 
-import com.example.seesaw.dto.TroubleAllResponseDto;
 import com.example.seesaw.dto.TroubleCommentRequestDto;
 import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleDto;
+import com.example.seesaw.dto.TroubleResponseDto;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
 import lombok.RequiredArgsConstructor;
