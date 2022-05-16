@@ -6,7 +6,6 @@ import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.TroubleCommentLikeService;
 import com.example.seesaw.service.TroubleCommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/trouble/comment")
 public class TroubleCommentController {
 
-
     private final TroubleCommentService troubleCommentService;
     private final TroubleCommentLikeService troubleCommentLikeService;
 
     //고민글 댓글 등록
-    @PostMapping("/api/trouble/comment/{troubleId}")
+    @PostMapping("/{troubleId}")
     public ResponseEntity<TroubleCommentRequestDto> registerComment(
             @PathVariable(name="troubleId") Long troubleId,
             @RequestBody TroubleCommentRequestDto troubleCommentRequestDto,

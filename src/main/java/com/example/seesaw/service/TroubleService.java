@@ -1,9 +1,9 @@
 package com.example.seesaw.service;
 
-import com.example.seesaw.dto.TroubleAllResponseDto;
 import com.example.seesaw.dto.TroubleCommentRequestDto;
 import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleDto;
+import com.example.seesaw.dto.TroubleResponseDto;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class TroubleService {
         List<String> imagePaths = new ArrayList<>();
 
         if(files == null){
-            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/TroubleBaicCard.svg");
         } else {
             imagePaths.addAll(troubleS3Service.upload(files));
         }
@@ -70,25 +70,19 @@ public class TroubleService {
         Trouble trouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
-
-
         List<TroubleTag> troubleTags = troubleTagRepository.findAllByTroubleId(troubleId);
 
         List<String> troubleTagList = new ArrayList<>();
         for(TroubleTag troubleTag : troubleTags){
             troubleTagList.add(troubleTag.getTagName());
         }
-
         List<TroubleImage> troubleImages = troubleImageRepository.findAllByTroubleId(troubleId);
-        if (troubleImages.isEmpty()){
-            throw new IllegalArgumentException("고민 Id에 해당하는 이미지가 없습니다.");
-        }
+
         List<String> troubleImageList = new ArrayList<>();
-        for(TroubleImage troubleImage : troubleImages){
+        for(TroubleImage troubleImage:troubleImages){
             troubleImageList.add(troubleImage.getTroubleImage());
         }
-
-        return new TroubleDto(trouble.getTitle(), trouble.getContents(), trouble.getQuestion(), trouble.getAnswer(), troubleTagList, troubleImageList);
+        return new TroubleDto(trouble, troubleTagList, troubleImageList);
     }
 
     //고민글 수정
@@ -107,7 +101,7 @@ public class TroubleService {
 
         List<String> imagePaths = new ArrayList<>();
         if(files == null && troubleDto.getTroubleImages().isEmpty()){
-            imagePaths.add("https://ceeso.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/TroubleBaicCard.svg");
             troubleS3Service.delete(troubleId, troubleDto.getTroubleImages());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         } else if(files!=null) {
@@ -181,40 +175,40 @@ public class TroubleService {
         troubleDetailResponseDto.setPostTime(postTime);
         troubleDetailResponseDto.setViews(trouble.getViews());
         trouble.setViews(trouble.getViews()+1);
-        //troubleRepository.save(trouble);
+        troubleRepository.save(trouble);
         return troubleDetailResponseDto;
     }
 
-    public List<TroubleAllResponseDto> findAllTroubles() {
+    public List<TroubleResponseDto> findAllTroubles() {
         List<Trouble> troubles = troubleRepository.findAllByOrderByCreatedAtDesc();
         return getTroubles(troubles);
     }
 
-    public List<TroubleAllResponseDto> findViewTroubles() {
+    public List<TroubleResponseDto> findViewTroubles() {
         List<Trouble> troubles = troubleRepository.findAllByOrderByViewsDesc();
         return getTroubles(troubles);
     }
 
-    public List<TroubleAllResponseDto> getTroubles(List<Trouble> troubles){
+    public List<TroubleResponseDto> getTroubles(List<Trouble> troubles){
         if(troubles.isEmpty()){
             throw new IllegalArgumentException("작성된 고민글이 없습니다.");
         }
-        List<TroubleAllResponseDto> troubleAllResponseDtos = new ArrayList<>();
+        List<TroubleResponseDto> troubleResponseDtos = new ArrayList<>();
 
         for(Trouble trouble:troubles){
             TroubleDto troubleDto = findTrouble(trouble.getId());
-            TroubleAllResponseDto troubleAllResponseDto = new TroubleAllResponseDto(troubleDto);
-            troubleAllResponseDto.setId(trouble.getId());
-            troubleAllResponseDto.setNickname(trouble.getUser().getNickname());
-            troubleAllResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
+            TroubleResponseDto troubleResponseDto = new TroubleResponseDto(troubleDto);
+            troubleResponseDto.setId(trouble.getId());
+            troubleResponseDto.setNickname(trouble.getUser().getNickname());
+            troubleResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
             String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
-            troubleAllResponseDto.setPostTime(postTime);
-            troubleAllResponseDto.setViews(trouble.getViews());
+            troubleResponseDto.setPostTime(postTime);
+            troubleResponseDto.setViews(trouble.getViews());
             List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleId(trouble.getId());
-            troubleAllResponseDto.setCommentCount((long) troubleComments.size());
-            troubleAllResponseDtos.add(troubleAllResponseDto);
+            troubleResponseDto.setCommentCount((long) troubleComments.size());
+            troubleResponseDtos.add(troubleResponseDto);
         }
-        return troubleAllResponseDtos;
+        return troubleResponseDtos;
     }
     // 댓글 리스폰스용
     public TroubleCommentRequestDto getTroubleCommentDto(User user, TroubleComment troubleComment) {

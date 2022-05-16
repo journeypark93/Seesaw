@@ -7,6 +7,7 @@ import com.example.seesaw.dto.PostRequestDto;
 import com.example.seesaw.dto.PostScrapSortResponseDto;
 import com.example.seesaw.repository.PostRepository;
 import com.example.seesaw.security.UserDetailsImpl;
+import com.example.seesaw.service.PostS3Service;
 import com.example.seesaw.service.PostScrapService;
 import com.example.seesaw.service.PostService;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +27,7 @@ public class PostController {
     private final PostService postService;
     private final PostRepository postRepository;
     private final PostScrapService postScrapService;
+    private final PostS3Service postS3Service;
 
 
     //단어 등록
@@ -62,6 +64,7 @@ public class PostController {
     //단어장 삭제
     @DeleteMapping("/api/post/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable Long postId) {
+        postS3Service.delete(postId, null);
         postRepository.deleteById(postId);
         return ResponseEntity.ok()
                 .body("고민글 삭제완료");

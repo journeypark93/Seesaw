@@ -135,12 +135,13 @@ public class PostService {
 
 
         PostDetailResponseDto postDetailResponseDto = getPostDetailResponseDto(user, post, postResponseDto);
+
         PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
         postDetailResponseDto.setScrapStatus(savedPostScrap != null);
 
         // paging 처리
         Pageable pageable = PageRequest.of(page-1, 4);
-        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId,pageable);
+        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId, pageable);
 
         // 댓글 개수
         List<PostComment> postComments = postCommentRepository.findAllByPostId(postId);
@@ -157,7 +158,6 @@ public class PostService {
         return postDetailResponseDto;
     }
 
-    //
     public PostDetailResponseDto getPostDetailResponseDto(User user, Post post, PostResponseDto postResponseDto) {
         PostDetailResponseDto postDetailResponseDto = new PostDetailResponseDto(postResponseDto);
         postDetailResponseDto.setNickname(user.getNickname()); //로그인한 사용자의 닉네임
@@ -173,6 +173,7 @@ public class PostService {
         postDetailResponseDto.setViews(post.getViews());
         postDetailResponseDto.setScrapCount(post.getScrapCount());
         post.setViews(post.getViews()+1);
+        postRepository.save(post);
         return postDetailResponseDto;
     }
 
@@ -251,13 +252,8 @@ public class PostService {
         List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
         for (Post post: posts) {
-
             List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
-            String postImageUrl = "";
-            for (PostImage postImage : postImages) {
-                postImageUrl = postImage.getPostImage();
-            }
-            postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
+            postListResponseDtos.add(new PostListResponseDto(post, postImages.get(0).getPostImage()));
         }
         return postListResponseDtos;
     }
@@ -303,7 +299,6 @@ public class PostService {
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
         for (Post post: posts) {
             List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
-            System.out.println(Arrays.deepToString(new List[]{postImages}));
             postListResponseDtos.add(new PostListResponseDto(post, postImages.get(0).getPostImage()));
             Collections.reverse(postListResponseDtos);
         }

@@ -1,10 +1,11 @@
 package com.example.seesaw.controller;
 
-import com.example.seesaw.dto.TroubleAllResponseDto;
+import com.example.seesaw.dto.TroubleResponseDto;
 import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleDto;
 import com.example.seesaw.repository.TroubleRepository;
 import com.example.seesaw.security.UserDetailsImpl;
+import com.example.seesaw.service.TroubleS3Service;
 import com.example.seesaw.service.TroubleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class TroubleController {
 
     private final TroubleService troubleService;
     private final TroubleRepository troubleRepository;
+    private final TroubleS3Service troubleS3Service;
 
     //고민글 등재
     @PostMapping("/api/trouble")
@@ -55,6 +57,7 @@ public class TroubleController {
     //고민글 삭제
     @DeleteMapping("/api/trouble/{troubleId}")
     public ResponseEntity<String> deleteTrouble(@PathVariable Long troubleId){
+        troubleS3Service.delete(troubleId, null);
         troubleRepository.deleteById(troubleId);
         return ResponseEntity.ok()
                 .body("고민글 삭제완료");
@@ -72,18 +75,18 @@ public class TroubleController {
 
     //고민글 전체 조회(최근 작성 순)
     @GetMapping("/api/trouble/list")
-    public ResponseEntity<List<TroubleAllResponseDto>> findAllTroubles(){
-        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findAllTroubles();
+    public ResponseEntity<List<TroubleResponseDto>> findAllTroubles(){
+        List<TroubleResponseDto> troubleResponseDto = troubleService.findAllTroubles();
         return ResponseEntity.ok()
-                .body(troubleAllResponseDto);
+                .body(troubleResponseDto);
     }
 
     //고민글 전체 조회(조회수 순)
     @GetMapping("/api/main/trouble/list")
-    public ResponseEntity<List<TroubleAllResponseDto>> findViewTroubles(){
-        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findViewTroubles();
+    public ResponseEntity<List<TroubleResponseDto>> findViewTroubles(){
+        List<TroubleResponseDto> troubleResponseDto = troubleService.findViewTroubles();
         return ResponseEntity.ok()
-                .body(troubleAllResponseDto);
+                .body(troubleResponseDto);
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.seesaw.security.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.seesaw.model.User;
+
 import java.util.Date;
 
 public final class JwtTokenUtils {
