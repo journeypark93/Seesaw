@@ -11,7 +11,8 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-public class TroubleLike{
+public class TroubleCommentLike {
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -25,7 +26,7 @@ public class TroubleLike{
     private TroubleComment troubleComment;
 
 
-    public TroubleLike(User user, TroubleComment troubleComment){
+    public TroubleCommentLike(User user, TroubleComment troubleComment){
         this.user = user;
         this.troubleComment = troubleComment;
     }

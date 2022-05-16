@@ -36,9 +36,9 @@ public class ChatService {
         Collections.reverse(chatMessageResponseDtoList);
         return chatMessageResponseDtoList;
     }
+
     // 채팅 메세지
     public void chatSave(ChatMessageDto chatMessageDto, String token ,ChatRoom chatRoom) {
-//        Long userId = 0L;
         String username = "";
 
         // 토큰 추출
@@ -46,7 +46,6 @@ public class ChatService {
             log.info("token : {}",String.valueOf(token));
             String tokenInfo = token.substring(7); // Bearer빼고
             username = jwtDecoder.decodeUsername(tokenInfo);
-//            userId = userRepository.findByUsername(username).get().getUid();
         }
 
         if(chatMessageDto.getStatus().equals("JOIN")) {
@@ -61,6 +60,7 @@ public class ChatService {
                 chatMessageDto.setMessage(chatMessageDto.getSenderName() + "님이 퇴장하셨습니다");
             }
         } else {
+
 //            log.info("비속어 필터링 전 채팅 : {}",chatMessageDto.getMessage());
 //            // 비속어 필터링 메소드
 //            chatFilter(chatMessageDto);

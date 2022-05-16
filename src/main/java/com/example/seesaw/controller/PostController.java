@@ -62,7 +62,7 @@ public class PostController {
     }
 
     //단어장 삭제
-    @DeleteMapping("api/post/{postId}")
+    @DeleteMapping("/api/post/{postId}")
     public ResponseEntity<String> deletePost(@PathVariable Long postId) {
         postRepository.deleteById(postId);
         return ResponseEntity.ok()
@@ -70,7 +70,7 @@ public class PostController {
     }
 
     //단어장 상세조회
-    @GetMapping("api/post/{postId}/detail")
+    @GetMapping("/api/post/{postId}/detail")
     public ResponseEntity<PostDetailResponseDto> findDetailPost(
             @RequestParam(value = "page") int page,
             @PathVariable Long postId,
@@ -98,7 +98,6 @@ public class PostController {
                 .body(postListResponseDtos);
     }
 
-
     // 사전 글 스크랩순으로 16개 조회 (메인페이지)
     @GetMapping("/api/main/post/scrap")
     public ResponseEntity<List<PostScrapSortResponseDto>> getPosts(){
@@ -117,7 +116,7 @@ public class PostController {
     }
 
     // 사전 글 스크랩순으로 9개 조회 (메인페이지)
-    @GetMapping("/api/main/postList")
+    @GetMapping("/api/main/post/list")
     public ResponseEntity<List<PostListResponseDto>> getMainListPosts(){
         List<PostListResponseDto> postListResponseDtos = postService.findMainListPosts();
 

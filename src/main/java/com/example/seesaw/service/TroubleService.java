@@ -4,6 +4,9 @@ import com.example.seesaw.dto.*;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,20 +27,20 @@ public class TroubleService {
     private final UserRepository userRepository;
 
     //Trouble 글 등록
-    public void registerTrouble(TroubleRequestDto troubleRequestDto, List<MultipartFile> files, User user) {
-        checkTrouble(troubleRequestDto);
+    public void registerTrouble(TroubleDto troubleDto, List<MultipartFile> files, User user) {
+        checkTrouble(troubleDto);
         List<String> imagePaths = new ArrayList<>();
 
         if(files == null){
-            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg");
         } else {
             imagePaths.addAll(troubleS3Service.upload(files));
         }
         Trouble trouble = new Trouble(
-                troubleRequestDto.getTitle(),
-                troubleRequestDto.getContents(),
-                troubleRequestDto.getQuestion(),
-                troubleRequestDto.getAnswer(),
+                troubleDto.getTitle(),
+                troubleDto.getContents(),
+                troubleDto.getQuestion(),
+                troubleDto.getAnswer(),
                 0L,
                 user
         );
@@ -48,7 +51,7 @@ public class TroubleService {
             troubleImageRepository.save(troubleImage);
         }
 
-        List<String> tags = troubleRequestDto.getTagName();
+        List<String> tags = troubleDto.getTagNames();
         for (String tag : tags) {
             if(!tag.equals("")){
                 TroubleTag troubleTag = new TroubleTag(tag, user, trouble);
@@ -58,7 +61,7 @@ public class TroubleService {
     }
 
     //고민글 수정 시 정보조회
-    public TroubleResponseDto findTrouble(Long troubleId) {
+    public TroubleDto findTrouble(Long troubleId) {
         Trouble trouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
@@ -66,9 +69,9 @@ public class TroubleService {
 
         List<TroubleTag> troubleTags = troubleTagRepository.findAllByTroubleId(troubleId);
 
-        List<String> gomiTagList = new ArrayList<>();
+        List<String> troubleTagList = new ArrayList<>();
         for(TroubleTag troubleTag : troubleTags){
-            gomiTagList.add(troubleTag.getTagName());
+            troubleTagList.add(troubleTag.getTagName());
         }
 
         List<TroubleImage> troubleImages = troubleImageRepository.findAllByTroubleId(troubleId);
@@ -77,14 +80,14 @@ public class TroubleService {
         }
         List<String> troubleImageList = new ArrayList<>();
         for(TroubleImage troubleImage : troubleImages){
-            troubleImageList.add(troubleImage.getTroubleImageUrl());
+            troubleImageList.add(troubleImage.getTroubleImage());
         }
 
-        return new TroubleResponseDto(trouble.getTitle(), trouble.getContent(), trouble.getQuestion(), trouble.getAnswer(), gomiTagList, troubleImageList);
+        return new TroubleDto(trouble.getTitle(), trouble.getContents(), trouble.getQuestion(), trouble.getAnswer(), troubleTagList, troubleImageList);
     }
 
     //고민글 수정
-    public void updateTrouble(TroubleRequestDto troubleRequestDto, List<MultipartFile> files, Long troubleId, User user) {
+    public void updateTrouble(TroubleDto troubleDto, List<MultipartFile> files, Long troubleId, User user) {
         Trouble trouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 고민글이 없습니다.")
         );
@@ -93,20 +96,20 @@ public class TroubleService {
         if(!user.getId().equals(troubleUserId)){
             throw new IllegalArgumentException("작성자가 아니므로 고민글 수정이 불가합니다.");
         }
-        checkTrouble(troubleRequestDto);
+        checkTrouble(troubleDto);
 
-        trouble.update(troubleRequestDto);
+        trouble.update(troubleDto);
 
         List<String> imagePaths = new ArrayList<>();
-        if(files == null && troubleRequestDto.getImageUrls().isEmpty()){
-            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
-            troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
+        if(files == null && troubleDto.getTroubleImages().isEmpty()){
+            imagePaths.add("https://ceeso.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
+            troubleS3Service.delete(troubleId, troubleDto.getTroubleImages());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         } else if(files!=null) {
-            imagePaths.addAll(troubleS3Service.update(troubleId, troubleRequestDto.getImageUrls(), files));
+            imagePaths.addAll(troubleS3Service.update(troubleId, troubleDto.getTroubleImages(), files));
         } else{
-            imagePaths = troubleRequestDto.getImageUrls();
-            troubleS3Service.delete(troubleId, troubleRequestDto.getImageUrls());
+            imagePaths = troubleDto.getTroubleImages();
+            troubleS3Service.delete(troubleId, troubleDto.getTroubleImages());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         }
 
@@ -114,7 +117,7 @@ public class TroubleService {
             TroubleImage troubleImage = new TroubleImage(imagePath, user, trouble);
             troubleImageRepository.save(troubleImage);
         }
-        List<String> tags = troubleRequestDto.getTagName();
+        List<String> tags = troubleDto.getTagNames();
         troubleTagRepository.deleteAllByTroubleId(troubleId);
         for (String tag : tags) {
             if(!tag.equals("")){
@@ -125,37 +128,35 @@ public class TroubleService {
     }
 
     //고민글 유효성 검사
-    public void checkTrouble(TroubleRequestDto troubleRequestDto) {
-        if (troubleRequestDto.getTitle().isEmpty()) {
+    public void checkTrouble(TroubleDto troubleDto) {
+        if (troubleDto.getTitle().isEmpty()) {
             throw new IllegalArgumentException("제목입력은 필수값입니다.");
-        } else if (troubleRequestDto.getContents().isEmpty()) {
+        } else if (troubleDto.getContents().isEmpty()) {
             throw new IllegalArgumentException("내용입력은 필수값입니다.");
-        } else if (troubleRequestDto.getQuestion().isEmpty()) {
+        } else if (troubleDto.getQuestion().isEmpty()) {
             throw new IllegalArgumentException("질문자세대 입력은 필수값입니다.");
-        } else if (troubleRequestDto.getAnswer().isEmpty()) {
+        } else if (troubleDto.getAnswer().isEmpty()) {
             throw new IllegalArgumentException("답변자세대 입력은 필수값입니다.");
         }
     }
 
-    public TroubleDetailResponseDto findDetailTrouble(Long troubleId) {
+    public TroubleDetailResponseDto findDetailTrouble(Long troubleId, int page) {
         Trouble trouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
-        TroubleResponseDto troubleResponseDto = findTrouble(troubleId);
+        TroubleDto troubleDto = findTrouble(troubleId);
 
-        TroubleDetailResponseDto troubleDetailResponseDto = new TroubleDetailResponseDto(troubleResponseDto);
-        troubleDetailResponseDto.setNickname(trouble.getUser().getNickname());
-        troubleDetailResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
-        String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
-        troubleDetailResponseDto.setPostTime(postTime);
-        troubleDetailResponseDto.setViews(trouble.getViews());
-        trouble.setViews(trouble.getViews()+1);
-        troubleRepository.save(trouble);
+        TroubleDetailResponseDto troubleDetailResponseDto = getTroubleDetailResponseDto(trouble, troubleDto);
 
-        List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleIdOrderByLikeCountDesc(troubleId);
+        Pageable pageable = PageRequest.of(page-1, 4);
+        Page<TroubleComment> troubleCommentPage = troubleCommentRepository.findAllByTroubleIdOrderByLikeCountDesc(troubleId, pageable);
+
+
+        List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleId(troubleId);
         troubleDetailResponseDto.setCommentCount((long) troubleComments.size());
+
         List<TroubleCommentRequestDto> troubleCommentRequestDtos = new ArrayList<>();
-        for(TroubleComment troubleComment:troubleComments){
+        for(TroubleComment troubleComment:troubleCommentPage){
             TroubleCommentRequestDto troubleCommentRequestDto = new TroubleCommentRequestDto(troubleComment);
             User user = userRepository.findByNickname(troubleComment.getNickname()).orElseThrow(
                     () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
@@ -164,6 +165,18 @@ public class TroubleService {
         }
         troubleDetailResponseDto.setTroubleComments(troubleCommentRequestDtos);
 
+        return troubleDetailResponseDto;
+    }
+
+    private TroubleDetailResponseDto getTroubleDetailResponseDto(Trouble trouble, TroubleDto troubleDto) {
+        TroubleDetailResponseDto troubleDetailResponseDto = new TroubleDetailResponseDto(troubleDto);
+        troubleDetailResponseDto.setNickname(trouble.getUser().getNickname());
+        troubleDetailResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
+        String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
+        troubleDetailResponseDto.setPostTime(postTime);
+        troubleDetailResponseDto.setViews(trouble.getViews());
+        trouble.setViews(trouble.getViews()+1);
+        //troubleRepository.save(trouble);
         return troubleDetailResponseDto;
     }
 
@@ -184,8 +197,8 @@ public class TroubleService {
         List<TroubleAllResponseDto> troubleAllResponseDtos = new ArrayList<>();
 
         for(Trouble trouble:troubles){
-            TroubleResponseDto troubleResponseDto = findTrouble(trouble.getId());
-            TroubleAllResponseDto troubleAllResponseDto = new TroubleAllResponseDto(troubleResponseDto);
+            TroubleDto troubleDto = findTrouble(trouble.getId());
+            TroubleAllResponseDto troubleAllResponseDto = new TroubleAllResponseDto(troubleDto);
             troubleAllResponseDto.setId(trouble.getId());
             troubleAllResponseDto.setNickname(trouble.getUser().getNickname());
             troubleAllResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));

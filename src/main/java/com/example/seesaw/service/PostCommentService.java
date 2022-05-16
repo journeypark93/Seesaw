@@ -1,6 +1,6 @@
 package com.example.seesaw.service;
 
-import com.example.seesaw.dto.PostCommentRequestDto;
+import com.example.seesaw.dto.PostCommentDto;
 import com.example.seesaw.model.Post;
 import com.example.seesaw.model.PostComment;
 import com.example.seesaw.model.User;
@@ -17,9 +17,12 @@ public class PostCommentService {
     private final PostRepository postRepository;
     private final PostCommentRepository postCommentRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final ConvertTimeService convertTimeService;
+    private final PostService postService;
 
     // 댓글 등록
-    public void registerPostComment(Long postId, PostCommentRequestDto requestDto, User user) {
+    public PostCommentDto registerPostComment(Long postId, PostCommentDto requestDto, User user) {
         User commentUser = userRepository.findById(user.getId()).orElseThrow(
                 () -> new IllegalStateException("해당하는 USER 가 없습니다.")
         );
@@ -28,14 +31,16 @@ public class PostCommentService {
                 () -> new IllegalStateException("해당 게시글이 없습니다."));
         PostComment postComment = new PostComment(savedPost, requestDto);
         postCommentRepository.save(postComment);
+        return postService.getPostCommentDto(user, postComment);
     }
 
     // 댓글 수정
-    public void updatePostComment(Long commentId, PostCommentRequestDto requestDto, User user) {
+    public PostCommentDto updatePostComment(Long commentId, PostCommentDto requestDto, User user) {
         PostComment postComment = checkCommentUser(commentId, user);
         postComment.setNickname(user.getNickname());
         postComment.setComment(requestDto.getComment());
         postCommentRepository.save(postComment);
+        return postService.getPostCommentDto(user, postComment);
     }
 
     // 댓글 삭제

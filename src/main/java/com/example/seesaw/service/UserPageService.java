@@ -62,11 +62,11 @@ public class UserPageService {
         List<UserProfile> userProfile = userProfileRepository.findAll();
         for (UserProfile profile : userProfile) {
             if (profile.getCategory().equals("faceUrl")) {
-                faceUrl.add(new ProfileListDto(profile.getCharId(), profile.getImageUrl()));
+                faceUrl.add(new ProfileListDto(profile.getCharId(), profile.getUserProfileImage()));
             } else if (profile.getCategory().equals("accessoryUrl")) {
-                accessoryUrl.add(new ProfileListDto(profile.getCharId(), profile.getImageUrl()));
+                accessoryUrl.add(new ProfileListDto(profile.getCharId(), profile.getUserProfileImage()));
             } else if (profile.getCategory().equals("backgroundUrl")) {
-                backgroudUrl.add(new ProfileListDto(profile.getCharId(), profile.getImageUrl()));
+                backgroudUrl.add(new ProfileListDto(profile.getCharId(), profile.getUserProfileImage()));
             }
         }
         return new ProfileResponseDto(faceUrl, accessoryUrl, backgroudUrl);
@@ -88,12 +88,13 @@ public class UserPageService {
                     // 첫번째 이미지만 가져오기
                     PostImage postImage = postImages.get(0);
                     // 일치한 postId에 해당하는 scrap 횟수만 가져오기
-                    List<PostScrap> scraps = postScrapRepository.findAllByPostId(post.getId());
+                    long scrapCount = postScrapRepository.countByPostId(post.getId());
                     // 일치한 postId 에 해당하는 comment 개수만 가져오기
-                    List<PostComment> comments = postCommentRepository.findAllByPostId(post.getId());
-                    myScrapResponseDtos.add(new MyScrapResponseDto(postScrap, post, scraps.size(),
-                            comments.size(),postImage));
+                    long commentCount = postCommentRepository.countByPostId(post.getId());
+                    myScrapResponseDtos.add(new MyScrapResponseDto(postScrap, post, scrapCount,
+                            commentCount, postImage));
                 }
+
             }
         }
         return myScrapResponseDtos;

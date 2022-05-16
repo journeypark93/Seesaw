@@ -18,9 +18,10 @@ public class PostListResponseDto {
     private String title;
     private String contents;
     private String generation;
-    private Long views;
-    private int scrapCount;
     private String postImages;
+    private Long views;
+    private Long scrapCount;
+
 
     public PostListResponseDto(Post post, String postImages){
         this.postId = post.getId();

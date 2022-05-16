@@ -15,26 +15,25 @@ import java.util.List;
 @NoArgsConstructor
 public class PostDetailResponseDto {
 
-    private String LastNickname;
-    private List<ProfileListDto> profileImages;
+    private boolean scrapStatus;        // 스크랩 여부
     private String title;
     private String contents;
-    private List<String> tagName;
-    private List<String> postImages;
-    private String generation;
     private String videoUrl;
+    private String nickname;            // 현재 로그인한 사용자 닉네임
+    private String generation;
+    private String lastNickname;        // 포스트 마지막 수정한 사용자 닉네임
+    private String postUpdateTime;      // 포스트 등록 시간
     private Long views;
+    private Long scrapCount;
     private Long commentCount;
-    private String postUpdateTime;
-    private boolean scrapStatus;
-    private List<PostCommentRequestDto> postComments;
-    private int scrapCount;
-    private String nickname;
-
+    private List<String> tagNames;
+    private List<String> postImages;
+    private List<ProfileListDto> profileImages;
+    private List<PostCommentDto> postComments;
 
 
     public PostDetailResponseDto(PostResponseDto responseDto) {
-        this.tagName = responseDto.getTagNames();
+        this.tagNames = responseDto.getTagNames();
         this.postImages = responseDto.getPostImages();
     }
 
