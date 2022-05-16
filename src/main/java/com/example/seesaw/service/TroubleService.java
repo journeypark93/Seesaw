@@ -29,7 +29,7 @@ public class TroubleService {
         List<String> imagePaths = new ArrayList<>();
 
         if(files == null){
-            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg");
         } else {
             imagePaths.addAll(troubleS3Service.upload(files));
         }

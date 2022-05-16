@@ -43,6 +43,10 @@ public class Post extends Timestamped {
     @Column
     private List<PostTag> postTags;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @Column
+    private List<PostComment> postComments;
+
     @ManyToOne
     @JoinColumn(name = "userid")
     private User user;

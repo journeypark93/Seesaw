@@ -1,9 +1,11 @@
 package com.example.seesaw.dto;
 
+import com.example.seesaw.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class PostDetailResponseDto {
     private List<String> tagNames;
     private List<String> postImages;
     private List<ProfileListDto> profileImages;
-    private List<PostCommentRequestDto> postComments;
+    private List<PostCommentDto> postComments;
 
 
     public PostDetailResponseDto(PostResponseDto responseDto) {
