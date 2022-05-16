@@ -23,7 +23,6 @@ public class PostCommentDto {
     List<ProfileListDto> ProfileImages;
     private boolean commentLikeStatus;
 
-
     public PostCommentDto(PostComment postComment) {
         this.commentId = postComment.getId();
         this.nickname = postComment.getNickname();

@@ -92,10 +92,8 @@ public class PostService {
                 () -> new IllegalArgumentException("해당 단어장이 없습니다.")
         );
 
-
         //post update
         post.update(requestDto, user);
-
 
         // 이미지 수정작업
         List<String> imagePaths = new ArrayList<>();
@@ -137,22 +135,6 @@ public class PostService {
 
 
         PostDetailResponseDto postDetailResponseDto = getPostDetailResponseDto(user, post, postResponseDto);
-
-        PostDetailResponseDto postDetailResponseDto = new PostDetailResponseDto(postResponseDto);
-        postDetailResponseDto.setNickname(user.getNickname()); //로그인한 사용자의 닉네임
-        postDetailResponseDto.setTitle(post.getTitle());
-        postDetailResponseDto.setContents(post.getContents());
-        postDetailResponseDto.setGeneration(post.getGeneration());
-        postDetailResponseDto.setVideoUrl(post.getVideoUrl());
-        postDetailResponseDto.setProfileImages(userService.findUserProfiles(post.getUser()));
-        postDetailResponseDto.setLastNickname(post.getUser().getNickname()); //글을 마지막으로 작성한 사람의 닉네임
-        String postTime = convertTimeService.convertLocaldatetimeToTime(post.getCreatedAt());
-        postDetailResponseDto.setPostUpdateTime(postTime);
-        postDetailResponseDto.setViews(post.getViews());
-        post.setViews(post.getViews()+1);
-        postRepository.save(post);
-
-
         PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
         postDetailResponseDto.setScrapStatus(savedPostScrap != null);
 
@@ -175,6 +157,7 @@ public class PostService {
         return postDetailResponseDto;
     }
 
+    //
     public PostDetailResponseDto getPostDetailResponseDto(User user, Post post, PostResponseDto postResponseDto) {
         PostDetailResponseDto postDetailResponseDto = new PostDetailResponseDto(postResponseDto);
         postDetailResponseDto.setNickname(user.getNickname()); //로그인한 사용자의 닉네임
@@ -188,6 +171,7 @@ public class PostService {
         String postTime = convertTimeService.convertLocaldatetimeToTime(post.getCreatedAt());
         postDetailResponseDto.setPostUpdateTime(postTime);
         postDetailResponseDto.setViews(post.getViews());
+        postDetailResponseDto.setScrapCount(post.getScrapCount());
         post.setViews(post.getViews()+1);
         return postDetailResponseDto;
     }
@@ -262,7 +246,7 @@ public class PostService {
     }
 
 
-    // 최신순으로 단어 리스트 페이지 조회
+    // 최신순으로 단어 전체 리스트 페이지 조회
     public List<PostListResponseDto> findListPosts(){
         List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();

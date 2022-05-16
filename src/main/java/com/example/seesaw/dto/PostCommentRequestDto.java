@@ -15,6 +15,7 @@ import java.util.List;
 
 public class PostCommentRequestDto {
 
+    private Long commentId;
     private boolean commentLikeStatus;
     private String nickname;
     private String comment;
@@ -24,6 +25,7 @@ public class PostCommentRequestDto {
 
 
     public PostCommentRequestDto(PostComment postComment) {
+        this.commentId = postComment.getId();
         this.nickname = postComment.getNickname();
         this.comment = postComment.getComment();
     }

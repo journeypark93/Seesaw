@@ -28,7 +28,7 @@ public class TroubleComment extends Timestamped{
     private String nickname;
 
     @Column
-    private Long likeCount;
+    private Long likeCount = 0L;
 
 
     public TroubleComment(Trouble trouble, TroubleCommentRequestDto troubleCommentRequestDto) {
