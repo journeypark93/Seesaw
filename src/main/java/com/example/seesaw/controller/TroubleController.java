@@ -53,7 +53,7 @@ public class TroubleController {
                 .body("고민글 수정완료");
     }
     //고민글 삭제
-    @DeleteMapping("api/trouble/{troubleId}")
+    @DeleteMapping("/api/trouble/{troubleId}")
     public ResponseEntity<String> deleteTrouble(@PathVariable Long troubleId){
         troubleRepository.deleteById(troubleId);
         return ResponseEntity.ok()
@@ -61,7 +61,7 @@ public class TroubleController {
     }
 
     //고민글 상세조회
-    @GetMapping("api/trouble/{troubleId}/detail")
+    @GetMapping("/api/trouble/{troubleId}/detail")
     public ResponseEntity<TroubleDetailResponseDto> findDetailTrouble(@PathVariable Long troubleId){
         TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId);
         return ResponseEntity.ok()
@@ -69,7 +69,7 @@ public class TroubleController {
     }
 
     //고민글 전체 조회(최근 작성 순)
-    @GetMapping("api/trouble/list")
+    @GetMapping("/api/trouble/list")
     public ResponseEntity<List<TroubleAllResponseDto>> findAllTroubles(){
         List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findAllTroubles();
         return ResponseEntity.ok()
@@ -77,7 +77,7 @@ public class TroubleController {
     }
 
     //고민글 전체 조회(조회수 순)
-    @GetMapping("api/main/trouble/list")
+    @GetMapping("/api/main/trouble/list")
     public ResponseEntity<List<TroubleAllResponseDto>> findViewTroubles(){
         List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findViewTroubles();
         return ResponseEntity.ok()

@@ -160,6 +160,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         skipPathList.add("GET,/oauth/**");
 
         skipPathList.add("GET,/image/**");
+        skipPathList.add("GET,/api/main/**");
         skipPathList.add("GET,/");
 
         // 채팅 관리 허용 (소켓통신을 위해)
@@ -191,7 +192,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
-//        configuration.addAllowedOrigin("http://hanghae99-sout.s3-website.ap-northeast-2.amazonaws.com"); // 배포 시
+        configuration.addAllowedOrigin("http://saintrabby.shop.s3-website.ap-northeast-2.amazonaws.com"); // 배포 시
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.addExposedHeader("Authorization");

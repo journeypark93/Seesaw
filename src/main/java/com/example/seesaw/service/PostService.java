@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +38,7 @@ public class PostService {
         // 단어장 작성시 이미지파일 없이 등록시 기본 이미지 파일로 올리기!
         List<String> imagePaths = new ArrayList<>();
         if (files == null) {
-            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg");
         } else {
             imagePaths.addAll(postS3Service.upload(files));
 
@@ -100,7 +99,7 @@ public class PostService {
         // 이미지 수정작업
         List<String> imagePaths = new ArrayList<>();
         if (files==null && requestDto.getPostImages().isEmpty()) {
-            imagePaths.add("기본이미지 AWS에 저장해서 주소넣기!");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg");
             postS3Service.delete(postId, requestDto.getPostImages());
             postImageRepository.deleteAllByPostId(postId);
         } else if(files!=null) {
@@ -135,6 +134,9 @@ public class PostService {
         );
         PostResponseDto postResponseDto = postTagAndImages(postId);
 
+
+        PostDetailResponseDto postDetailResponseDto = getPostDetailResponseDto(user, post, postResponseDto);
+
         PostDetailResponseDto postDetailResponseDto = new PostDetailResponseDto(postResponseDto);
         postDetailResponseDto.setNickname(user.getNickname()); //로그인한 사용자의 닉네임
         postDetailResponseDto.setTitle(post.getTitle());
@@ -149,6 +151,7 @@ public class PostService {
         post.setViews(post.getViews()+1);
         postRepository.save(post);
 
+
         PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
         postDetailResponseDto.setScrapStatus(savedPostScrap != null);
 
@@ -161,22 +164,43 @@ public class PostService {
         postDetailResponseDto.setCommentCount((long) postComments.size());
 
 
-        List<PostCommentRequestDto> postCommentRequestDtos = new ArrayList<>();
+        List<PostCommentDto> postCommentDtos = new ArrayList<>();
         for(PostComment postComment:postCommentPage){
-            PostCommentRequestDto postCommentRequestDto = new PostCommentRequestDto(postComment);
-            User commentUser = userRepository.findByNickname(postComment.getNickname()).orElseThrow(
-                    () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
-            postCommentRequestDto.setProfileImages(userService.findUserProfiles(commentUser));
-            postCommentRequestDto.setCommentLikeCount(postComment.getLikeCount());
-            String postCommentTime = convertTimeService.convertLocaldatetimeToTime(postComment.getCreatedAt());
-            postCommentRequestDto.setCommentTime(postCommentTime);
-            PostCommentLike savedPostCommentLike = postCommentLikeRepository.findByPostCommentAndUserId(postComment, user.getId());
-            postCommentRequestDto.setCommentLikeStatus(savedPostCommentLike != null);
-            postCommentRequestDtos.add(postCommentRequestDto);
+            PostCommentDto postCommentRequestDto = getPostCommentDto(user, postComment);
+            postCommentDtos.add(postCommentRequestDto);
         }
-        postDetailResponseDto.setPostComments(postCommentRequestDtos);
+        postDetailResponseDto.setPostComments(postCommentDtos);
 
         return postDetailResponseDto;
+    }
+
+    public PostDetailResponseDto getPostDetailResponseDto(User user, Post post, PostResponseDto postResponseDto) {
+        PostDetailResponseDto postDetailResponseDto = new PostDetailResponseDto(postResponseDto);
+        postDetailResponseDto.setNickname(user.getNickname()); //로그인한 사용자의 닉네임
+        postDetailResponseDto.setTitle(post.getTitle());
+        postDetailResponseDto.setContents(post.getContents());
+        postDetailResponseDto.setGeneration(post.getGeneration());
+        postDetailResponseDto.setVideoUrl(post.getVideoUrl());
+        postDetailResponseDto.setProfileImages(userService.findUserProfiles(post.getUser()));
+        postDetailResponseDto.setLastNickname(post.getUser().getNickname()); //글을 마지막으로 작성한 사람의 닉네임
+        String postTime = convertTimeService.convertLocaldatetimeToTime(post.getCreatedAt());
+        postDetailResponseDto.setPostUpdateTime(postTime);
+        postDetailResponseDto.setViews(post.getViews());
+        post.setViews(post.getViews()+1);
+        return postDetailResponseDto;
+    }
+
+    public PostCommentDto getPostCommentDto(User user, PostComment postComment) {
+        PostCommentDto postCommentRequestDto = new PostCommentDto(postComment);
+        User commentUser = userRepository.findByNickname(postComment.getNickname()).orElseThrow(
+                () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
+        postCommentRequestDto.setProfileImages(userService.findUserProfiles(commentUser));
+        postCommentRequestDto.setCommentLikeCount(postComment.getLikeCount());
+        String postCommentTime = convertTimeService.convertLocaldatetimeToTime(postComment.getCreatedAt());
+        postCommentRequestDto.setCommentTime(postCommentTime);
+        PostCommentLike savedPostCommentLike = postCommentLikeRepository.findByPostCommentAndUserId(postComment, user.getId());
+        postCommentRequestDto.setCommentLikeStatus(savedPostCommentLike != null);
+        return postCommentRequestDto;
     }
 
 
@@ -196,7 +220,11 @@ public class PostService {
 
         List<String> postImageList = new ArrayList<>();
         for(PostImage postImage : postImages){
-            postImageList.add(postImage.getPostImage());
+            if(postImage.getPostImage().equals("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg")){
+                break;
+            } else {
+                postImageList.add(postImage.getPostImage());
+            }
         }
 
         return new PostResponseDto(post, postImageList, postTagList);
@@ -244,7 +272,6 @@ public class PostService {
                 postImageUrl = postImage.getPostImage();
             }
             postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
-            Collections.reverse(postListResponseDtos);
         }
         return postListResponseDtos;
     }
@@ -277,14 +304,8 @@ public class PostService {
             for(Post postPage:postPages){
                 // postId 에 해당하는 post image 를 가져온다.
                 List<PostImage> postImages = postImageRepository.findAllByPostId(postPage.getId());
-                String imageUrl = "";
-                for (PostImage postImage: postImages
-                ) {
-                    // 하나만 뽑아서 break
-                    imageUrl = postImage.getPostImage();
-                    break;
-                }
-                postScrapSortResponseDtos.add(new PostScrapSortResponseDto(postPage, imageUrl));
+
+                postScrapSortResponseDtos.add(new PostScrapSortResponseDto(postPage, postImages.get(0).getPostImage()));
             }
         }
         return postScrapSortResponseDtos;
@@ -295,16 +316,10 @@ public class PostService {
         List<Post> posts = postRepository.findTop9ByOrderByCreatedAtDesc();
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
         for (Post post: posts) {
-
             List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
-            String postImageUrl = "";
-            for (PostImage postImage : postImages) {
-                postImageUrl = postImage.getPostImage();
-            }
-            postListResponseDtos.add(new PostListResponseDto(post, postImageUrl));
+            postListResponseDtos.add(new PostListResponseDto(post, postImages.get(0).getPostImage()));
             Collections.reverse(postListResponseDtos);
         }
         return postListResponseDtos;
     }
-
 }

@@ -16,7 +16,7 @@ public class TroubleLikeController {
 
     private final TroubleLikeService troubleLikeService;
 
-    @PostMapping("api/trouble/{commentId}/like")
+    @PostMapping("/api/trouble/{commentId}/like")
     public boolean getGoods(@PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return troubleLikeService.getLikes(commentId, userDetails.getUser());
     }

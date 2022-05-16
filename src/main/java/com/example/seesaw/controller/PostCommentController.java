@@ -1,13 +1,12 @@
 package com.example.seesaw.controller;
 
 
-import com.example.seesaw.dto.PostCommentRequestDto;
+import com.example.seesaw.dto.PostCommentDto;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.PostCommentLikeService;
 import com.example.seesaw.service.PostCommentService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -21,25 +20,25 @@ public class PostCommentController {
     private final PostCommentLikeService postCommentLikeService;
 
     @PostMapping("/api/post/comment/{postId}")
-    public ResponseEntity<String> registerPostComment(
+    public ResponseEntity<PostCommentDto> registerPostComment(
             @PathVariable(name = "postId") Long postId,
-            @RequestBody PostCommentRequestDto requestDto,
+            @RequestBody PostCommentDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        postCommentService.registerPostComment(postId, requestDto, userDetails.getUser());
+        PostCommentDto postCommentDto = postCommentService.registerPostComment(postId, requestDto, userDetails.getUser());
         return ResponseEntity.ok()
-                .body("단어장 예시 등록 완료");
+                .body(postCommentDto);
     }
 
     @PutMapping("/api/post/comment/{commentId}")
-    public ResponseEntity<String> updatePostComment(
+    public ResponseEntity<PostCommentDto> updatePostComment(
             @PathVariable Long commentId,
-            @RequestBody PostCommentRequestDto requestDto,
+            @RequestBody PostCommentDto requestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        postCommentService.updatePostComment(commentId, requestDto, userDetails.getUser());
+        PostCommentDto postCommentDto = postCommentService.updatePostComment(commentId, requestDto, userDetails.getUser());
         return ResponseEntity.ok()
-                .body("단어장 예시 수정 완료");
+                .body(postCommentDto);
     }
 
     @DeleteMapping("/api/post/comment/{commentId}")
@@ -53,7 +52,7 @@ public class PostCommentController {
     }
 
     @ApiOperation("예시 좋아요/취소")
-    @PostMapping("api/post/comment/{commentId}/like")
+    @PostMapping("/api/post/comment/{commentId}/like")
     public boolean getGoods(
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
