@@ -1,10 +1,10 @@
 package com.example.seesaw.service;
 
 import com.example.seesaw.model.TroubleComment;
-import com.example.seesaw.model.TroubleLike;
+import com.example.seesaw.model.TroubleCommentLike;
 import com.example.seesaw.model.User;
 import com.example.seesaw.repository.TroubleCommentRepository;
-import com.example.seesaw.repository.TroubleLikeRepository;
+import com.example.seesaw.repository.TroubleCommentLikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +12,10 @@ import javax.transaction.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class TroubleLikeService {
+public class TroubleCommentLikeService {
 
     private final TroubleCommentRepository troubleCommentRepository;
-    private final TroubleLikeRepository troubleLikeRepository;
+    private final TroubleCommentLikeRepository troubleCommentLikeRepository;
 
     @Transactional
     public boolean getLikes(Long commentId, User user) {
@@ -24,16 +24,16 @@ public class TroubleLikeService {
                 () -> new IllegalArgumentException("해당하는 댓글이 없습니다.")
         );
 
-        TroubleLike savedLike = troubleLikeRepository.findByTroubleCommentAndUserId(troubleComment, userId);
+        TroubleCommentLike savedLike = troubleCommentLikeRepository.findByTroubleCommentAndUserId(troubleComment, userId);
 
         if(savedLike != null){
-            troubleLikeRepository.deleteById(savedLike.getId());
+            troubleCommentLikeRepository.deleteById(savedLike.getId());
             troubleComment.setLikeCount(troubleComment.getLikeCount()-1); //고민댓글 좋아요 수 -1
             troubleCommentRepository.save(troubleComment);
             return false;
         } else{
-            TroubleLike troubleLike = new TroubleLike(user, troubleComment);
-            troubleLikeRepository.save(troubleLike);
+            TroubleCommentLike troubleCommentLike = new TroubleCommentLike(user, troubleComment);
+            troubleCommentLikeRepository.save(troubleCommentLike);
             troubleComment.setLikeCount(troubleComment.getLikeCount()+1); //고민댓글 좋아요 수 +1
             troubleCommentRepository.save(troubleComment);
             return true;
@@ -47,7 +47,7 @@ public class TroubleLikeService {
                 () -> new IllegalArgumentException("해당하는 게시글이 없습니다.")
         );
 
-        TroubleLike savedLike = troubleLikeRepository.findByTroubleCommentAndUserId(troubleComment, userId);
+        TroubleCommentLike savedLike = troubleCommentLikeRepository.findByTroubleCommentAndUserId(troubleComment, userId);
         return savedLike != null;
     }
 }

@@ -33,7 +33,7 @@ public class Post extends Timestamped {
     private String generation;
 
     @Column
-    private Long scrapCount;
+    private Long scrapCount = 0L;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     @Column

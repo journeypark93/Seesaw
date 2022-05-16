@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -165,6 +166,7 @@ public class PostService {
         postDetailResponseDto.setContents(post.getContents());
         postDetailResponseDto.setGeneration(post.getGeneration());
         postDetailResponseDto.setVideoUrl(post.getVideoUrl());
+        postDetailResponseDto.setScrapCount(post.getScrapCount());
         postDetailResponseDto.setProfileImages(userService.findUserProfiles(post.getUser()));
         postDetailResponseDto.setLastNickname(post.getUser().getNickname()); //글을 마지막으로 작성한 사람의 닉네임
         String postTime = convertTimeService.convertLocaldatetimeToTime(post.getCreatedAt());
@@ -301,6 +303,7 @@ public class PostService {
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
         for (Post post: posts) {
             List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
+            System.out.println(Arrays.deepToString(new List[]{postImages}));
             postListResponseDtos.add(new PostListResponseDto(post, postImages.get(0).getPostImage()));
             Collections.reverse(postListResponseDtos);
         }

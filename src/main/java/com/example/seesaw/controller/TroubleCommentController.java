@@ -3,17 +3,23 @@ package com.example.seesaw.controller;
 
 import com.example.seesaw.dto.TroubleCommentRequestDto;
 import com.example.seesaw.security.UserDetailsImpl;
+import com.example.seesaw.service.TroubleCommentLikeService;
 import com.example.seesaw.service.TroubleCommentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/trouble/comment")
 public class TroubleCommentController {
-    @Autowired
-    private TroubleCommentService troubleCommentService;
+
+    private final TroubleCommentService troubleCommentService;
+    private final TroubleCommentLikeService troubleCommentLikeService;
+
+
 
     @PostMapping("/{troubleId}")
     public ResponseEntity<String> registerComment(
@@ -43,4 +49,11 @@ public class TroubleCommentController {
         return ResponseEntity.ok()
                 .body("고민글 댓글삭제 완료");
     }
+
+    @PostMapping("/{commentId}/like")
+    public boolean getGoods(@PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return troubleCommentLikeService.getLikes(commentId, userDetails.getUser());
+    }
+
+
 }
