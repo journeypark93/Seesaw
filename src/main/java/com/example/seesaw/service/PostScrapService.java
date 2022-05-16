@@ -5,12 +5,10 @@ import com.example.seesaw.model.PostScrap;
 import com.example.seesaw.model.User;
 import com.example.seesaw.repository.PostRepository;
 import com.example.seesaw.repository.PostScrapRepository;
-import com.example.seesaw.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service

@@ -1,7 +1,6 @@
 package com.example.seesaw.dto;
 
 import com.example.seesaw.model.PostComment;
-import com.example.seesaw.model.TroubleComment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -5,7 +5,6 @@ import com.example.seesaw.model.PostCommentLike;
 import com.example.seesaw.model.User;
 import com.example.seesaw.repository.PostCommentLikeRepository;
 import com.example.seesaw.repository.PostCommentRepository;
-import com.example.seesaw.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
