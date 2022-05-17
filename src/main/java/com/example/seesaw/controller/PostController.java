@@ -84,10 +84,10 @@ public class PostController {
     //단어장 스크랩, 스크랩취소
     @ApiOperation("단어장 스크랩")
     @PostMapping("/api/post/{postId}/scrap")
-    public ResponseEntity<Boolean> scrapPost(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        boolean sracpStatus = postScrapService.scrapPost(postId, userDetails.getUser());
+    public ResponseEntity<PostListResponseDto> scrapPost(@PathVariable Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        PostListResponseDto postListResponseDto = postScrapService.scrapPost(postId, userDetails.getUser());
         return ResponseEntity.ok()
-                .body(sracpStatus);
+                .body(postListResponseDto);
     }
 
     // 사전 리스트 전체 조회(리스트 페이지)
