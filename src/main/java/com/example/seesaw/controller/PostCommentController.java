@@ -56,10 +56,9 @@ public class PostCommentController {
 
     @ApiOperation("예시 좋아요/취소")
     @PostMapping("/api/post/comment/{commentId}/like")
-    public boolean getGoods(
+    public PostCommentDto getGoods(
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails){
-
         return postCommentLikeService.getPostCommentLikes(commentId, userDetails.getUser());
     }
 }
