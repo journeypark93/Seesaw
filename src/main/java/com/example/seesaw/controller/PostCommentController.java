@@ -45,13 +45,13 @@ public class PostCommentController {
 
     //댓글 삭제
     @DeleteMapping("/api/post/comment/{commentId}")
-    public ResponseEntity<String> deletePostComment(
+    public ResponseEntity<PostCommentDto> deletePostComment(
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        postCommentService.deletePostComment(commentId, userDetails.getUser());
+        PostCommentDto postCommentDto = postCommentService.deletePostComment(commentId, userDetails.getUser());
         return ResponseEntity.ok()
-                .body("단어장 예시 삭제 완료");
+                .body(postCommentDto);
     }
 
     @ApiOperation("예시 좋아요/취소")
