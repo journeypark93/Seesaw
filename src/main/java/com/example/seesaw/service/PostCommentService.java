@@ -51,6 +51,9 @@ public class PostCommentService {
         int index = postCommentList.indexOf(postComment); // index 0,1,2,3/4,5,6,7/8,9,10,11/12,13,14,15
         postCommentRepository.deleteById(commentId);
         int a = index / 4 +1;
+        if(postCommentList.size() < 5){
+            return new PostCommentDto(postCommentList.size()-1);
+        }
         return postService.getPostCommentDto(user, postCommentList.get(a*4));
     }
     // 댓글 유저 확인
