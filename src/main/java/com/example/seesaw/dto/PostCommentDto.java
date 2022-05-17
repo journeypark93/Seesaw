@@ -29,4 +29,7 @@ public class PostCommentDto {
         this.comment = postComment.getComment();
     }
 
+    public PostCommentDto(int commentCount) {
+        this.CommentCount = (long) commentCount;
+    }
 }
