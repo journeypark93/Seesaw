@@ -10,6 +10,8 @@ import com.example.seesaw.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PostCommentService {
@@ -43,9 +45,13 @@ public class PostCommentService {
     }
 
     // 댓글 삭제
-    public void deletePostComment(Long commentId, User user) {
-        checkCommentUser(commentId, user);
+    public PostCommentDto deletePostComment(Long commentId, User user) {
+        PostComment postComment = checkCommentUser(commentId, user);
+        List<PostComment> postCommentList = postCommentRepository.findAllByPostIdOrderByCreatedAtDesc(postComment.getPost().getId());
+        int index = postCommentList.indexOf(postComment); // index 0,1,2,3/4,5,6,7/8,9,10,11/12,13,14,15
         postCommentRepository.deleteById(commentId);
+        int a = index / 4 +1;
+        return postService.getPostCommentDto(user, postCommentList.get(a*4));
     }
     // 댓글 유저 확인
     public PostComment checkCommentUser(Long commentId, User user){

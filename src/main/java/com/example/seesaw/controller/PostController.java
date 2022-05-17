@@ -92,8 +92,8 @@ public class PostController {
 
     // 사전 리스트 전체 조회(리스트 페이지)
     @GetMapping("/api/post/list")
-    public ResponseEntity<List<PostListResponseDto>> getListPosts(){
-        List<PostListResponseDto> postListResponseDtos = postService.findListPosts();
+    public ResponseEntity<List<PostListResponseDto>> getListPosts(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        List<PostListResponseDto> postListResponseDtos = postService.findListPosts(userDetails.getUser());
 
         return ResponseEntity.ok()
                 .body(postListResponseDtos);

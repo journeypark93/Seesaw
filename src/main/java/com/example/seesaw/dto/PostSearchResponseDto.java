@@ -17,15 +17,17 @@ public class PostSearchResponseDto {
     private String generation;
     private Long imageCount;
     private Long commentCount;
+    private boolean scrapStatus;
 
     @Builder
-    public PostSearchResponseDto(Long id, String title, String contents, String generation, Long imageCount, Long commentCount) {
+    public PostSearchResponseDto(Long id, String title, String contents, String generation, Long imageCount, Long commentCount, boolean scrapStatus) {
         this.id = id;
         this.title = title;
         this.contents = contents;
         this.generation = generation;
         this.imageCount = imageCount;
         this.commentCount = commentCount;
+        this.scrapStatus = scrapStatus;
     }
 
     public Post toEntity() {
