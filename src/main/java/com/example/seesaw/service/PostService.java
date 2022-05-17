@@ -141,7 +141,7 @@ public class PostService {
 
         // paging 처리
         Pageable pageable = PageRequest.of(page-1, 4);
-        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByLikeCountDesc(postId, pageable);
+        Page<PostComment> postCommentPage = postCommentRepository.findAllByPostIdOrderByCreatedAtDesc(postId, pageable);
 
         // 댓글 개수
         List<PostComment> postComments = postCommentRepository.findAllByPostId(postId);
@@ -185,6 +185,8 @@ public class PostService {
         postCommentRequestDto.setCommentLikeCount(postComment.getLikeCount());
         String postCommentTime = convertTimeService.convertLocaldatetimeToTime(postComment.getCreatedAt());
         postCommentRequestDto.setCommentTime(postCommentTime);
+        Long size = (long) postCommentRepository.findAllByPostId(postComment.getPost().getId()).size();
+        postCommentRequestDto.setCommentCount(size);
         PostCommentLike savedPostCommentLike = postCommentLikeRepository.findByPostCommentAndUserId(postComment, user.getId());
         postCommentRequestDto.setCommentLikeStatus(savedPostCommentLike != null);
         return postCommentRequestDto;
@@ -217,7 +219,7 @@ public class PostService {
         return new PostResponseDto(post, postImageList, postTagList);
     }
     @Transactional
-    public PostSearchDto searchPosts(String title, String contents) {
+    public PostSearchDto searchPosts(String title, String contents, User user) {
         List<Post> posts = postRepository.findByTitleContainingOrContentsContaining(title,contents);
         List<PostSearchResponseDto> searchList = new ArrayList<>();
         PostSearchDto postSearchList = new PostSearchDto();
@@ -225,7 +227,7 @@ public class PostService {
             return postSearchList;
 
         for (Post post : posts) {
-            searchList.add(this.convertEntityToDto(post));
+            searchList.add(this.convertEntityToDto(post, user));
         }
         Long size = (long) searchList.size();
         postSearchList.setListCount(size);
@@ -233,8 +235,10 @@ public class PostService {
 
         return postSearchList;
     }
-    private PostSearchResponseDto convertEntityToDto(Post post) {
+    private PostSearchResponseDto convertEntityToDto(Post post, User user) {
         List<PostComment> postComments = postCommentRepository.findAllByPostId(post.getId());
+        PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
+        boolean scrapStatus = savedPostScrap != null;
 
         return PostSearchResponseDto.builder()
                 .id(post.getId())
@@ -243,17 +247,20 @@ public class PostService {
                 .generation(post.getGeneration())
                 .imageCount((long)post.getPostImages().size())
                 .commentCount((long)postComments.size())
+                .scrapStatus(scrapStatus)
                 .build();
     }
 
 
     // 최신순으로 단어 전체 리스트 페이지 조회
-    public List<PostListResponseDto> findListPosts(){
+    public List<PostListResponseDto> findListPosts(User user){
         List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
         for (Post post: posts) {
+            PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
+            boolean scrapStatus = savedPostScrap != null;
             List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
-            postListResponseDtos.add(new PostListResponseDto(post, postImages.get(0).getPostImage()));
+            postListResponseDtos.add(new PostListResponseDto(post, scrapStatus, postImages.get(0).getPostImage()));
         }
         return postListResponseDtos;
     }
