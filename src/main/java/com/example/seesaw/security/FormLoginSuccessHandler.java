@@ -18,7 +18,6 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
     @Autowired
     private UserDetailsServiceImpl userDetailsServiceImpl;
 
-
     @Override
     public void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
                                         final Authentication authentication) {

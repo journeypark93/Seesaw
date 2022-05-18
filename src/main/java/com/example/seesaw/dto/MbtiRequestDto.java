@@ -11,8 +11,16 @@ import lombok.Setter;
 @NoArgsConstructor
 public class MbtiRequestDto {
 
+    private String id;
     private String energy;
     private String insight;
     private String judgement;
     private String lifePattern;
+
+    public MbtiRequestDto(String energy, String insight, String judgement, String lifePattern){
+        this.energy = energy;
+        this.insight = insight;
+        this.judgement = judgement;
+        this.lifePattern = lifePattern;
+    }
 }
