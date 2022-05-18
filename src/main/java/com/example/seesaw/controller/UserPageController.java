@@ -33,13 +33,6 @@ public class UserPageController {
         return ResponseEntity.ok()
                 .body(userInfoResponseDto);
     }
-//    //내가 작성한 고민글 조회
-//    @GetMapping("/api/mypage/trouble")
-//    public ResponseEntity<UserTroubleResponseDto> findTroubles(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        UserTroubleResponseDto gominResponseDto = troubleService.findTroubles(userDetails.getUser());
-//        return ResponseEntity.ok()
-//                .body(gominResponseDto);
-//    }
 
     //닉네임, 프로필 이미지 수정
     @PutMapping("/api/mypage/profile")
