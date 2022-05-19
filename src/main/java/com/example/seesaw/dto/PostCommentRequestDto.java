@@ -20,7 +20,7 @@ public class PostCommentRequestDto {
     private String nickname;
     private String comment;
     private String commentTime;
-    private Long CommentLikeCount;
+    private Long commentLikeCount;
     List<ProfileListDto> ProfileImages;
 
 

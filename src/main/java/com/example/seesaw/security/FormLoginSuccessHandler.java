@@ -29,7 +29,7 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         System.out.println(userDetails.getUsername() + "'s token : " + TOKEN_TYPE + " " + accesstoken);
         //response.addHeader(ACCESS_TOKEN, TOKEN_TYPE + " " + accesstoken);
         // RefreshToken 생성
-        final String refreshToken = userDetailsServiceImpl.saveRefershToken(userDetails.getUser());
+        final String refreshToken = userDetailsServiceImpl.saveRefreshToken(userDetails.getUser());
         response.addHeader(ACCESS_TOKEN, TOKEN_TYPE + " " + accesstoken + ";" + TOKEN_TYPE + " " + refreshToken);
 
         //response.addHeader(REFRESH_TOKEN, TOKEN_TYPE + " " + refreshToken);

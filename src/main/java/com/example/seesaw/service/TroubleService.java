@@ -1,15 +1,12 @@
 package com.example.seesaw.service;
 
+import com.example.seesaw.dto.TroubleAllResponseDto;
 import com.example.seesaw.dto.TroubleCommentRequestDto;
 import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleDto;
-import com.example.seesaw.dto.TroubleResponseDto;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,7 +34,7 @@ public class TroubleService {
         List<String> imagePaths = new ArrayList<>();
 
         if(files == null){
-            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/TroubleBaicCard.svg");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg");
         } else {
             imagePaths.addAll(troubleS3Service.upload(files));
         }
@@ -70,19 +67,25 @@ public class TroubleService {
         Trouble trouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
+
+
         List<TroubleTag> troubleTags = troubleTagRepository.findAllByTroubleId(troubleId);
 
         List<String> troubleTagList = new ArrayList<>();
         for(TroubleTag troubleTag : troubleTags){
             troubleTagList.add(troubleTag.getTagName());
         }
-        List<TroubleImage> troubleImages = troubleImageRepository.findAllByTroubleId(troubleId);
 
+        List<TroubleImage> troubleImages = troubleImageRepository.findAllByTroubleId(troubleId);
+        if (troubleImages.isEmpty()){
+            throw new IllegalArgumentException("고민 Id에 해당하는 이미지가 없습니다.");
+        }
         List<String> troubleImageList = new ArrayList<>();
-        for(TroubleImage troubleImage:troubleImages){
+        for(TroubleImage troubleImage : troubleImages){
             troubleImageList.add(troubleImage.getTroubleImage());
         }
-        return new TroubleDto(trouble, troubleTagList, troubleImageList);
+
+        return new TroubleDto(trouble.getTitle(), trouble.getContents(), trouble.getQuestion(), trouble.getAnswer(), troubleTagList, troubleImageList);
     }
 
     //고민글 수정
@@ -101,7 +104,7 @@ public class TroubleService {
 
         List<String> imagePaths = new ArrayList<>();
         if(files == null && troubleDto.getTroubleImages().isEmpty()){
-            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/TroubleBaicCard.svg");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
             troubleS3Service.delete(troubleId, troubleDto.getTroubleImages());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         } else if(files!=null) {
@@ -139,27 +142,31 @@ public class TroubleService {
         }
     }
 
-    public TroubleDetailResponseDto findDetailTrouble(Long troubleId, int page) {
+    // 고민 상세보기
+    public TroubleDetailResponseDto findDetailTrouble(Long troubleId, User user) {
         Trouble trouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
         );
         TroubleDto troubleDto = findTrouble(troubleId);
 
-        TroubleDetailResponseDto troubleDetailResponseDto = getTroubleDetailResponseDto(trouble, troubleDto);
+        TroubleDetailResponseDto troubleDetailResponseDto = new TroubleDetailResponseDto(troubleDto);
+        troubleDetailResponseDto.setWriter(trouble.getUser().getNickname()); // 작성자 닉네임
+        troubleDetailResponseDto.setNickname(user.getNickname()); // 댓글 작성할 본인 닉네임
+        troubleDetailResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
+        String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
+        troubleDetailResponseDto.setTroubleTime(postTime);
+        troubleDetailResponseDto.setViews(trouble.getViews());
+        trouble.setViews(trouble.getViews()+1);
+        troubleRepository.save(trouble);
 
-        Pageable pageable = PageRequest.of(page-1, 4);
-        Page<TroubleComment> troubleCommentPage = troubleCommentRepository.findAllByTroubleIdOrderByLikeCountDesc(troubleId, pageable);
-
-
-        List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleId(troubleId);
+        List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleIdOrderByLikeCountDesc(troubleId);
         troubleDetailResponseDto.setCommentCount((long) troubleComments.size());
-
         List<TroubleCommentRequestDto> troubleCommentRequestDtos = new ArrayList<>();
-        for(TroubleComment troubleComment:troubleCommentPage){
+        for(TroubleComment troubleComment:troubleComments){
             TroubleCommentRequestDto troubleCommentRequestDto = new TroubleCommentRequestDto(troubleComment);
-            User user = userRepository.findByNickname(troubleComment.getNickname()).orElseThrow(
+            User commentUser = userRepository.findByNickname(troubleComment.getNickname()).orElseThrow(
                     () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
-            troubleCommentRequestDto.setProfileImages(userService.findUserProfiles(user));
+            troubleCommentRequestDto.setProfileImages(userService.findUserProfiles(commentUser));
             troubleCommentRequestDtos.add(troubleCommentRequestDto);
         }
         troubleDetailResponseDto.setTroubleComments(troubleCommentRequestDtos);
@@ -167,48 +174,37 @@ public class TroubleService {
         return troubleDetailResponseDto;
     }
 
-    private TroubleDetailResponseDto getTroubleDetailResponseDto(Trouble trouble, TroubleDto troubleDto) {
-        TroubleDetailResponseDto troubleDetailResponseDto = new TroubleDetailResponseDto(troubleDto);
-        troubleDetailResponseDto.setNickname(trouble.getUser().getNickname());
-        troubleDetailResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
-        String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
-        troubleDetailResponseDto.setPostTime(postTime);
-        troubleDetailResponseDto.setViews(trouble.getViews());
-        trouble.setViews(trouble.getViews()+1);
-        troubleRepository.save(trouble);
-        return troubleDetailResponseDto;
-    }
-
-    public List<TroubleResponseDto> findAllTroubles() {
+    public List<TroubleAllResponseDto> findAllTroubles() {
         List<Trouble> troubles = troubleRepository.findAllByOrderByCreatedAtDesc();
         return getTroubles(troubles);
     }
 
-    public List<TroubleResponseDto> findViewTroubles() {
+    public List<TroubleAllResponseDto> findViewTroubles() {
         List<Trouble> troubles = troubleRepository.findAllByOrderByViewsDesc();
         return getTroubles(troubles);
     }
 
-    public List<TroubleResponseDto> getTroubles(List<Trouble> troubles){
+    // 고민글 전체 리스트 조회
+    public List<TroubleAllResponseDto> getTroubles(List<Trouble> troubles){
         if(troubles.isEmpty()){
             throw new IllegalArgumentException("작성된 고민글이 없습니다.");
         }
-        List<TroubleResponseDto> troubleResponseDtos = new ArrayList<>();
+        List<TroubleAllResponseDto> troubleAllResponseDtos = new ArrayList<>();
 
         for(Trouble trouble:troubles){
             TroubleDto troubleDto = findTrouble(trouble.getId());
-            TroubleResponseDto troubleResponseDto = new TroubleResponseDto(troubleDto);
-            troubleResponseDto.setId(trouble.getId());
-            troubleResponseDto.setNickname(trouble.getUser().getNickname());
-            troubleResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
+            TroubleAllResponseDto troubleAllResponseDto = new TroubleAllResponseDto(troubleDto);
+            troubleAllResponseDto.setTroubleId(trouble.getId());
+            troubleAllResponseDto.setNickname(trouble.getUser().getNickname());
+            troubleAllResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
             String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
-            troubleResponseDto.setPostTime(postTime);
-            troubleResponseDto.setViews(trouble.getViews());
+            troubleAllResponseDto.setPostTime(postTime);
+            troubleAllResponseDto.setViews(trouble.getViews());
             List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleId(trouble.getId());
-            troubleResponseDto.setCommentCount((long) troubleComments.size());
-            troubleResponseDtos.add(troubleResponseDto);
+            troubleAllResponseDto.setCommentCount((long) troubleComments.size());
+            troubleAllResponseDtos.add(troubleAllResponseDto);
         }
-        return troubleResponseDtos;
+        return troubleAllResponseDtos;
     }
     // 댓글 리스폰스용
     public TroubleCommentRequestDto getTroubleCommentDto(User user, TroubleComment troubleComment) {
@@ -216,7 +212,7 @@ public class TroubleService {
         User commentUser = userRepository.findByNickname(troubleComment.getNickname()).orElseThrow(
                 () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
         troubleCommentRequestDto.setProfileImages(userService.findUserProfiles(commentUser));
-        troubleCommentRequestDto.setLikeCount(troubleComment.getLikeCount());
+        troubleCommentRequestDto.setCommentLikeCount(troubleComment.getLikeCount());
         String troubleCommentTime = convertTimeService.convertLocaldatetimeToTime(troubleComment.getCreatedAt());
         troubleCommentRequestDto.setCommentTime(troubleCommentTime);
         TroubleCommentLike savedTroubleCommentLike = troubleCommentLikeRepository.findByTroubleCommentAndUserId(troubleComment, user.getId());

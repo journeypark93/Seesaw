@@ -214,7 +214,7 @@ public class UserService {
     }
 
     public boolean existsRefreshToken(String username) {
-        return redisService.getValues(username) != null;
+        return redisService.getRefreshValues(username) != null;
     }
 
 }
