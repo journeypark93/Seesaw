@@ -1,10 +1,12 @@
 package com.example.seesaw.security;
 
+import com.example.seesaw.redis.RedisService;
 import com.example.seesaw.security.jwt.JwtTokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,7 +31,9 @@ public class FormLoginSuccessHandler extends SavedRequestAwareAuthenticationSucc
         // RefreshToken 생성
         final String refreshToken = userDetailsServiceImpl.saveRefershToken(userDetails.getUser());
         response.addHeader(ACCESS_TOKEN, TOKEN_TYPE + " " + accesstoken + ";" + TOKEN_TYPE + " " + refreshToken);
+
         //response.addHeader(REFRESH_TOKEN, TOKEN_TYPE + " " + refreshToken);
         System.out.println("LOGIN SUCCESS!");
+
     }
 }
