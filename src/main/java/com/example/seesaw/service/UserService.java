@@ -22,6 +22,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,8 +63,9 @@ public class UserService {
         }
 
         // 패스워드 암호화
-        String enPassword = passwordEncoder.encode(requestDto.getPwd());
-        User user = new User(username, enPassword, nickname, generation, postCount, mbti, role);
+        String enPassword = redisService.getValues(requestDto.getId());
+        redisService.delValues(requestDto.getId());
+        User user = new User(username, enPassword, nickname, generation, postCount, mbti,role);
         userRepository.save(user); // DB 저장
 
         for (Long charId : charIds) {
@@ -135,6 +137,9 @@ public class UserService {
     }
 
     public String checkMbti(MbtiRequestDto mbtiRequestDto) {
+        if(mbtiRequestDto.getId() == null) {
+            throw new CustomException(ErrorCode.BLANK_USER_NAME);
+        }
         String mbtiName = mbtiRequestDto.getEnergy() + mbtiRequestDto.getInsight() + mbtiRequestDto.getJudgement() + mbtiRequestDto.getLifePattern();
         if (mbtiName.length() != 4 || mbtiName.contains("null")) {
             throw new CustomException(ErrorCode.BLANK_USER_MBTI);
@@ -154,7 +159,7 @@ public class UserService {
         return new UserInfoResponseDto(user.getUsername(), user.getNickname(), profileListDtos);
     }
 
-    public void checkUser(UserCheckRequestDto userCheckRequestDto) {
+    public String checkUser(UserCheckRequestDto userCheckRequestDto) {
         String username = userCheckRequestDto.getUsername();
         String pwd = userCheckRequestDto.getPwd();
         String pwdCheck = userCheckRequestDto.getPwdCheck();
@@ -164,6 +169,13 @@ public class UserService {
 
         //비밀번호 유효성 검사
         checkUserPw(pwd, pwdCheck);
+        //비밀번호 암호화
+        String enPassword = passwordEncoder.encode(pwd);
+        //Redis에 비밀번호 저장
+        String id = UUID.randomUUID().toString() + username;
+        redisService.setValues(id, enPassword);
+
+        return id;
     }
 
     public List<ProfileListDto> findUserProfiles(User user) {
