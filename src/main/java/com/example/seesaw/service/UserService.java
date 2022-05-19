@@ -7,6 +7,7 @@ import com.example.seesaw.model.User;
 import com.example.seesaw.model.UserProfile;
 import com.example.seesaw.model.UserProfileNum;
 import com.example.seesaw.model.UserRoleEnum;
+import com.example.seesaw.redis.RedisService;
 import com.example.seesaw.repository.MbtiRepository;
 import com.example.seesaw.repository.UserProfileNumRepository;
 import com.example.seesaw.repository.UserProfileRepository;
@@ -33,6 +34,7 @@ public class UserService {
     private final MbtiRepository mbtiRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtDecoder jwtDecoder;
+    private final RedisService redisService;
     private static final String ADMIN_TOKEN = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
     public void registerUser(SignupRequestDto requestDto) {
@@ -55,16 +57,16 @@ public class UserService {
         }
         //profile 저장
         List<Long> charIds = requestDto.getCharId();
-        if (charIds == null){
+        if (charIds == null) {
             throw new IllegalArgumentException("charIds가 null 입니다.");
         }
 
         // 패스워드 암호화
         String enPassword = passwordEncoder.encode(requestDto.getPwd());
-        User user = new User(username, enPassword, nickname, generation, postCount, mbti,role);
+        User user = new User(username, enPassword, nickname, generation, postCount, mbti, role);
         userRepository.save(user); // DB 저장
 
-        for(Long charId : charIds){
+        for (Long charId : charIds) {
             UserProfile userProfile = userProfileRepository.findByCharId(charId);
             UserProfileNum userProfileNum = new UserProfileNum(userProfile, user);
             userProfileNumRepository.save(userProfileNum);
@@ -126,8 +128,7 @@ public class UserService {
         return nickname;
     }
 
-    public String validateToken(RefreshTokenDto refreshTokenDto) {
-        String username = jwtDecoder.decodeUsername(refreshTokenDto.getRefreshToken());
+    public String validateToken(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("해당하는 사용자가 없습니다."));
         return JwtTokenUtils.generateJwtToken(user);
@@ -135,12 +136,12 @@ public class UserService {
 
     public String checkMbti(MbtiRequestDto mbtiRequestDto) {
         String mbtiName = mbtiRequestDto.getEnergy() + mbtiRequestDto.getInsight() + mbtiRequestDto.getJudgement() + mbtiRequestDto.getLifePattern();
-        if(mbtiName.length() != 4 || mbtiName.contains("null")){
+        if (mbtiName.length() != 4 || mbtiName.contains("null")) {
             throw new CustomException(ErrorCode.BLANK_USER_MBTI);
         }
         //MBTI table 만들어서 맞는 설명으로 치환해서 내려주기
         String detail = mbtiRepository.findByMbtiName(mbtiName).getDetail();
-        if(detail.isEmpty()){
+        if (detail.isEmpty()) {
             throw new IllegalArgumentException("해당하는 MBTI가 없습니다.");
         }
         return detail;
@@ -165,29 +166,44 @@ public class UserService {
         checkUserPw(pwd, pwdCheck);
     }
 
-    public List<ProfileListDto> findUserProfiles(User user){
+    public List<ProfileListDto> findUserProfiles(User user) {
 
         List<UserProfileNum> userProfileNums = userProfileNumRepository.findAllByUserId(user.getId());
-        System.out.println("userId   "+ user.getId());
-        if(userProfileNums.isEmpty()){
+        System.out.println("userId   " + user.getId());
+        if (userProfileNums.isEmpty()) {
             throw new IllegalArgumentException("저장된 userProfileId 가 없습니다.");
         }
 
         List<ProfileListDto> profileListDtos = new ArrayList<>();
-        for(UserProfileNum num : userProfileNums){
+        for (UserProfileNum num : userProfileNums) {
             UserProfile userProfile = userProfileRepository.findById(num.getUserProfile().getId()).orElseThrow(
                     () -> new IllegalArgumentException("해당하는 userProfile 이 없습니다."));
-            if (userProfile.getCategory().equals("faceUrl")){
+            if (userProfile.getCategory().equals("faceUrl")) {
                 ProfileListDto faceUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getUserProfileImage());
                 profileListDtos.add(faceUrl);
-            } else if(userProfile.getCategory().equals("accessoryUrl")){
+            } else if (userProfile.getCategory().equals("accessoryUrl")) {
                 ProfileListDto accessoryUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getUserProfileImage());
                 profileListDtos.add(accessoryUrl);
-            } else if(userProfile.getCategory().equals("backgroundUrl")){
+            } else if (userProfile.getCategory().equals("backgroundUrl")) {
                 ProfileListDto backgroundUrl = new ProfileListDto(userProfile.getCharId(), userProfile.getUserProfileImage());
                 profileListDtos.add(backgroundUrl);
             }
         }
         return profileListDtos;
     }
+
+    public String refreshToken(RefreshTokenDto refreshTokenDto) {
+        String accessToken = "";
+        String username = jwtDecoder.decodeUsername(refreshTokenDto.getRefreshToken());
+        if (existsRefreshToken(username)) {
+            accessToken = validateToken(username);
+        }
+        return accessToken;
+    }
+
+    public boolean existsRefreshToken(String username) {
+        return redisService.getValues(username) != null;
+    }
+
 }
+

@@ -143,6 +143,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new FormLoginSuccessHandler();
     }
 
+
+
     @Bean
     public FormLoginFailureHandler formLoginFailureHandler() { return new FormLoginFailureHandler(); }
 

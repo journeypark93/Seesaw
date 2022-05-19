@@ -19,6 +19,7 @@ public class PostSearchResponseDto {
     private Long commentCount;
     private boolean scrapStatus;
 
+
     @Builder
     public PostSearchResponseDto(Long id, String title, String contents, String generation, Long imageCount, Long commentCount, boolean scrapStatus) {
         this.id = id;
