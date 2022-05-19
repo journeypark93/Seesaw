@@ -13,4 +13,5 @@ public interface TroubleCommentLikeRepository extends JpaRepository<TroubleComme
 
     @Transactional
     void deleteById(Long id);
+
 }

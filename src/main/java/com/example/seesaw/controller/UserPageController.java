@@ -48,12 +48,19 @@ public class UserPageController {
     // 내가 스크랩한 글 조회
     @GetMapping("/api/mypage/scraps")
     public ResponseEntity<List<MyScrapResponseDto>> getMyScrapPage(@AuthenticationPrincipal UserDetailsImpl userDetails){
-        List<MyScrapResponseDto> myScrapResponseDto = userPageService.getMyScraps(userDetails.getUser());
+        List<MyScrapResponseDto> myScrapResponseDtos = userPageService.getMyScraps(userDetails.getUser());
 
         return ResponseEntity.ok()
-                .body(myScrapResponseDto);
+                .body(myScrapResponseDtos);
     }
+    // 내가 등록한 단어 조회
+    @GetMapping("/api/mypage/posts")
+    public ResponseEntity<List<MyPostResponseDto>> getMyPostPage(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        List<MyPostResponseDto> myPostResponseDtos = userPageService.getMyPosts(userDetails.getUser());
 
+        return ResponseEntity.ok()
+                .body(myPostResponseDtos);
+    }
     // 내가 등록한 고민글 조회
     @GetMapping("/api/mypage/troubles")
     public ResponseEntity<List<MyTroublesResponseDto>> getMyTroublePage(@AuthenticationPrincipal UserDetailsImpl userDetails){

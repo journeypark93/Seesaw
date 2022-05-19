@@ -1,15 +1,15 @@
 package com.example.seesaw.repository;
 
 
-import com.example.seesaw.model.Crossword;
+import com.example.seesaw.model.CrosswordDic;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 
-public interface CrosswordRepository extends JpaRepository<Crossword, Long> {
+public interface CrosswordRepository extends JpaRepository<CrosswordDic, Long> {
 
     //게임용
-    List<Crossword> findAllById(Long postId);
+    List<CrosswordDic> findAllById(Long postId);
 
 }

@@ -1,13 +1,10 @@
 package com.example.seesaw.controller;
 
 import com.example.seesaw.dto.*;
-import com.example.seesaw.repository.UserProfileRepository;
-import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.UserPageService;
 import com.example.seesaw.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,9 +43,9 @@ public class UserController {
     }
 
     //accessToken 만료 시 refreshToken 유효한지 확인 후 accessToken 재발급
-    @PostMapping("/user/refresh")
+    @PostMapping("/refresh")
     public ResponseEntity<String> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
-        String accessToken = userService.validateToken(refreshTokenDto);
+        String accessToken = userService.refreshToken(refreshTokenDto);
         return ResponseEntity.ok()
                 .header("Authorization", "Bearer " + accessToken)
                 .body("accessToken 재발급 완료");
@@ -59,7 +56,6 @@ public class UserController {
     public ProfileResponseDto findProfiles() {
         return userPageService.findProfiles();
     }
-
 
 }
 

@@ -53,9 +53,9 @@ public class TroubleCommentController {
                 .body("고민글 댓글삭제 완료");
     }
 
-    @PostMapping("/{commentId}/like")
+    // 고민 댓글 좋아요/취소
+    @PostMapping("/api/trouble/{commentId}/like")
     public boolean getGoods(@PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails){
         return troubleCommentLikeService.getLikes(commentId, userDetails.getUser());
     }
-
 }

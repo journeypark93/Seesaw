@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,8 +51,15 @@ public class PostService {
         String videoUrl = requestDto.getVideoUrl();
         // generation
         String generation = requestDto.getGeneration();
+        // 게시물 첫 등록한 사람
+        String firstWriter = user.getNickname();
         // 태그
         List<String> tagNames = requestDto.getTagNames();
+
+        // 중복검사
+        if(wordCheck(title)){
+            throw new IllegalArgumentException("등록된 단어입니다.");
+        }
 
         if (title == null) {
             throw new IllegalArgumentException("등록할 단어를 적어주세요.");
@@ -62,7 +68,7 @@ public class PostService {
         }
 
         //post 저장
-        Post post = new Post(title, contents, videoUrl, generation, user, 0L);
+        Post post = new Post(title, contents, videoUrl, generation, user, firstWriter ,0L);
         postRepository.save(post);
 
         //이미지 URL 저장하기
@@ -218,6 +224,7 @@ public class PostService {
 
         return new PostResponseDto(post, postImageList, postTagList);
     }
+
     @Transactional
     public PostSearchDto searchPosts(String title, String contents, User user) {
         List<Post> posts = postRepository.findByTitleContainingOrContentsContaining(title,contents);
@@ -235,18 +242,21 @@ public class PostService {
 
         return postSearchList;
     }
+
+    // 검색
     private PostSearchResponseDto convertEntityToDto(Post post, User user) {
         List<PostComment> postComments = postCommentRepository.findAllByPostId(post.getId());
         PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
         boolean scrapStatus = savedPostScrap != null;
-
+        int size = postScrapRepository.findAllByPostId(post.getId()).size();
         return PostSearchResponseDto.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .contents(post.getContents())
                 .generation(post.getGeneration())
-                .imageCount((long)post.getPostImages().size())
-                .commentCount((long)postComments.size())
+                .views((long)post.getViews())
+                .scrapCount((long)size)
+                .postImage(post.getPostImages().get(0).getPostImage())
                 .scrapStatus(scrapStatus)
                 .build();
     }

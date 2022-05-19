@@ -155,7 +155,7 @@ public class KakaoUserService {
         System.out.println("kakaoUserDetails : " + kakaoUserDetails.toString());
 
         final String accessToken = JwtTokenUtils.generateJwtToken(kakaoUserDetails.getUser());
-        final String refreshtoken = userDetailsServiceImpl.saveRefershToken(kakaoUserDetails.getUser());
+        final String refreshtoken = userDetailsServiceImpl.saveRefreshToken(kakaoUserDetails.getUser());
 
         List<String> tokens = new ArrayList<>();
         tokens.add(accessToken);

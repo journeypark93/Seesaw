@@ -19,7 +19,7 @@ public class TroubleCommentRequestDto {
     private String commentTime; // 댓글 등록한 시간
     private String nickname; // 닉네임
     private String comment;
-    private Long likeCount;
+    private Long commentLikeCount;
     List<ProfileListDto> ProfileImages;
 
     public TroubleCommentRequestDto(TroubleComment troubleComment) {
