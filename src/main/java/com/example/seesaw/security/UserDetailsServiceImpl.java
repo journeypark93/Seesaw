@@ -28,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserDetailsImpl(user);
     }
 
-    public String saveRefershToken(User user){
+    public String saveRefreshToken(User user){
         User thisUser = userRepository.findById(user.getId())
                 .orElseThrow(() -> new UsernameNotFoundException("Can't find " + user));
         String refreshToken = JwtTokenUtils.generateRefreshToken(thisUser);
@@ -37,8 +37,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         userRefreshToken.setRefreshToken(refreshToken);
         refreshTokenRepository.deleteByUserId(user.getId());  //id 값은 그대로이면서 수정되는것으로 변경하기
         refreshTokenRepository.save(userRefreshToken);
-        redisService.delValues(user.getUsername());
-        redisService.setValues(user.getUsername(),refreshToken);
+        redisService.delRefreshValues(user.getUsername());
+        redisService.setRefreshValues(user.getUsername(),refreshToken);
         return refreshToken;
     }
 }

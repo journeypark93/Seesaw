@@ -11,23 +11,23 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TroubleDetailResponseDto {
+public class TroubleAllResponseDto {
 
-    private String nickname; // 본인 닉네임.
-    private String writer; // 글작성자 이
+    private Long troubleId;
+    private String nickname;
     private String title;
     private String contents;
     private String question;
     private String answer;
-    private String troubleTime;
+    private String postTime;
     private Long views;
     private Long commentCount;
-    private List<String> tagNames;          // tagName -> tagNames
+    private List<String> tagNames;
     private List<String> troubleImages;     // imageUrls -> troubleImages
     private List<ProfileListDto> profileImages;
-    private List<TroubleCommentRequestDto> troubleComments;
 
-    public TroubleDetailResponseDto(TroubleDto troubleDto) {
+
+    public TroubleAllResponseDto(TroubleDto troubleDto) {
         this.title = troubleDto.getTitle();
         this.contents = troubleDto.getContents();
         this.question = troubleDto.getQuestion();

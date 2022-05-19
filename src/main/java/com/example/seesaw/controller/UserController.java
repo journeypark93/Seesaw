@@ -1,13 +1,10 @@
 package com.example.seesaw.controller;
 
 import com.example.seesaw.dto.*;
-import com.example.seesaw.repository.UserProfileRepository;
-import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.UserPageService;
 import com.example.seesaw.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

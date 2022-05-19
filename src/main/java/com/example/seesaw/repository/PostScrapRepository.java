@@ -15,4 +15,5 @@ public interface PostScrapRepository extends JpaRepository<PostScrap, Long> {
 
     long countByPostId(Long id);
 
+    List<PostScrap> findAllByPostId(Long id);
 }

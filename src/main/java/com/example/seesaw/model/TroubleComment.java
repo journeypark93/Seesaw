@@ -35,7 +35,7 @@ public class TroubleComment extends Timestamped{
         this.trouble = trouble;
         this.comment = troubleCommentRequestDto.getComment();
         this.nickname = troubleCommentRequestDto.getNickname();
-        this.likeCount = troubleCommentRequestDto.getLikeCount();
+        this.likeCount = troubleCommentRequestDto.getCommentLikeCount();
     }
 
 

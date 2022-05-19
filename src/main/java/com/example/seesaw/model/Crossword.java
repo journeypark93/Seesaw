@@ -12,10 +12,32 @@ public class Crossword {
     @Id
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
+    @Column()
+    private int x;                  // x좌표
 
-    @Column(nullable = false)
-    private String contents;
+    @Column
+    private int y;                 // y좌표
+
+    @Column
+    private String word;         // 단어
+
+    @Column
+    private String contents;  // 내용
+
+    @Column
+    private int wordCount; // 글자수
+
+    @Column
+    private boolean isOriental; // 가로면 true, 세로면 false
+
+    @ManyToOne
+    @JoinColumn(name = "QuizNum_ID", nullable = false)
+    private QuizNum quizNum;
+
+    @Column
+    private int overlappedX; // 겹치는 x 좌표
+
+    @Column
+    private int overlappedY; // 겹치는 y 좌표
 
 }

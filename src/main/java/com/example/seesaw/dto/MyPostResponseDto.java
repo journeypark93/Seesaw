@@ -2,7 +2,6 @@ package com.example.seesaw.dto;
 
 import com.example.seesaw.model.Post;
 import com.example.seesaw.model.PostImage;
-import com.example.seesaw.model.PostScrap;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,9 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class MyScrapResponseDto {
-    private Long postId;
-    private Long scrapId;           // 스크랩 id
+public class MyPostResponseDto {
+    private Long postId;            // 단어글 아이디
     private String title;           // 제목
     private String contents;        //내용
     private String generation;      // 세대
@@ -22,9 +20,8 @@ public class MyScrapResponseDto {
     private String mainImage;       // 메인 이미지
     private boolean scrapStatus;    // 스크랩 했는지 안했는지 상태
 
-    public MyScrapResponseDto(PostScrap postScrap, Post post, Long scrapCount, Long commentCount, PostImage postImage, boolean scrapStatus){
+    public MyPostResponseDto(Post post, Long scrapCount, Long commentCount, PostImage postImage, boolean scrapStatus){
         this.postId = post.getId();
-        this.scrapId = postScrap.getId();
         this.title = post.getTitle();
         this.contents = post.getContents();
         this.generation = post.getGeneration();
@@ -34,5 +31,4 @@ public class MyScrapResponseDto {
         this.mainImage = postImage.getPostImage();
         this.scrapStatus = scrapStatus;
     }
-
 }

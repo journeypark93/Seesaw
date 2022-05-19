@@ -24,6 +24,8 @@ public class UserPageService {
     private final PostImageRepository postImageRepository;
     private final PostCommentRepository postCommentRepository;
     private final TroubleRepository troubleRepository;
+    private final TroubleImageRepository troubleImageRepository;
+
 
     // 프로필 수정
     public void updateProfile(ProfileRequestDto profileRequestDto, User user) {
@@ -91,13 +93,42 @@ public class UserPageService {
                     long scrapCount = postScrapRepository.countByPostId(post.getId());
                     // 일치한 postId 에 해당하는 comment 개수만 가져오기
                     long commentCount = postCommentRepository.countByPostId(post.getId());
+                    // 스크랩 상태
+                    PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
+                    boolean scrapStatus = savedPostScrap != null;
+
                     myScrapResponseDtos.add(new MyScrapResponseDto(postScrap, post, scrapCount,
-                            commentCount, postImage));
+                            commentCount, postImage, scrapStatus));
                 }
 
             }
         }
         return myScrapResponseDtos;
+    }
+
+    // 내가 등록한 단어장 조회 (마이페이지)
+    public List<MyPostResponseDto> getMyPosts(User user){
+        // 내가 첫 작성자인 단어글 가져오기
+        List<Post> posts = postRepository.findAllByFirstWriter(user.getNickname());
+
+        List<MyPostResponseDto> myPostResponseDtos = new ArrayList<>();
+        for (Post post: posts
+             ) {
+            // postId에 해당하는 postImage 가져오기
+            List<PostImage> postImages = postImageRepository.findAllByPostId(post.getId());
+            // 첫번째 이미지만 가져오기
+            PostImage postImage = postImages.get(0);
+            // 일치한 postId에 해당하는 scrap 횟수만 가져오기
+            long scrapCount = postScrapRepository.countByPostId(post.getId());
+            // 일치한 postId 에 해당하는 comment 개수만 가져오기
+            long commentCount = postCommentRepository.countByPostId(post.getId());
+            // 스크랩 상태
+            PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
+            boolean scrapStatus = savedPostScrap != null;
+
+            myPostResponseDtos.add(new MyPostResponseDto(post,scrapCount,commentCount,postImage, scrapStatus));
+        }
+        return  myPostResponseDtos;
     }
 
     // 내가 등록한 고민글 조회 (마이페이지)
@@ -106,7 +137,13 @@ public class UserPageService {
 
         List<MyTroublesResponseDto> myTroublesResponseDtos = new ArrayList<>();
         for (Trouble trouble : troubles) {
-            myTroublesResponseDtos.add(new MyTroublesResponseDto(trouble));
+            // troubleId에 해당하는 troulbleImage 가져오기
+            List<TroubleImage> troubleImages = troubleImageRepository.findAllByTroubleId(trouble.getId());
+            TroubleImage troubleImage = troubleImages.get(0);
+            // 고민글 댓글 수
+            long commentCount = troubleCommentRepository.countByTroubleId(trouble.getId());
+
+            myTroublesResponseDtos.add(new MyTroublesResponseDto(trouble,commentCount,troubleImage));
         }
         return myTroublesResponseDtos;
     }
