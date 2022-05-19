@@ -15,18 +15,19 @@ public class PostSearchResponseDto {
     private String title;
     private String contents;
     private String generation;
-    private Long imageCount;
-    private Long commentCount;
+    private String postImage;
+    private Long views;
+    private Long scrapCount;
     private boolean scrapStatus;
 
     @Builder
-    public PostSearchResponseDto(Long id, String title, String contents, String generation, Long imageCount, Long commentCount, boolean scrapStatus) {
+    public PostSearchResponseDto(Long id, String title, String contents, String generation, Long views, Long scrapCount, boolean scrapStatus) {
         this.id = id;
         this.title = title;
         this.contents = contents;
         this.generation = generation;
-        this.imageCount = imageCount;
-        this.commentCount = commentCount;
+        this.views = views;
+        this.scrapCount = scrapCount;
         this.scrapStatus = scrapStatus;
     }
 

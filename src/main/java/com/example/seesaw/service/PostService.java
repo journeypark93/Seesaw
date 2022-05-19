@@ -280,7 +280,7 @@ public class PostService {
 
         return postScrapSortResponseDtos;
     }
-
+    //랜덤으로 2개 조회
     public List<PostScrapSortResponseDto> findRandomPosts() {
         List<PostScrapSortResponseDto> postScrapSortResponseDtos = new ArrayList<>();
         //게시글의 개수를 구한다.

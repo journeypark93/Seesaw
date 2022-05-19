@@ -38,7 +38,7 @@ public class CrosswordService {
                 String[] str = crossword.getTitle().split(""); // [어, 쩔, 티, 비]
                 for (String s : str) {
                     String c = crossword.getContents();
-                    crossWordResponseDtos.add(new CrossWordResponseDto(x, y, s, c));  // 가로로 (1,3,어)(2,3,쩔)(3,3,티)(4,3,비)
+                    crossWordResponseDtos.add(new CrossWordResponseDto(x, y, s, c));  // 가로로 (1,3,어,내용)(2,3,쩔,내용)(3,3,티,내용)(4,3,비,내용)
                     x++;
                 }
             }
