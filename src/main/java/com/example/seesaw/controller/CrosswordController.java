@@ -15,6 +15,7 @@ public class CrosswordController {
 
     private final CrosswordService crosswordService;
 
+    // 게임판 단어까지 자동생성
     @GetMapping("/api/crossword")
     public ResponseEntity<List<CrossWordResponseDto>> test(){
         List<CrossWordResponseDto> crossWordResponseDtos = crosswordService.getWord();
