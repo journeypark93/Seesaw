@@ -34,10 +34,4 @@ public class Crossword {
     @JoinColumn(name = "QuizNum_ID", nullable = false)
     private QuizNum quizNum;
 
-    @Column
-    private int overlappedX; // 겹치는 x 좌표
-
-    @Column
-    private int overlappedY; // 겹치는 y 좌표
-
 }

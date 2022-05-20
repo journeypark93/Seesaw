@@ -62,8 +62,10 @@ public class TroubleController {
 
     //고민글 상세조회
     @GetMapping("/api/trouble/{troubleId}/detail")
-    public ResponseEntity<TroubleDetailResponseDto> findDetailTrouble(@PathVariable Long troubleId, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId, userDetails.getUser());
+    public ResponseEntity<TroubleDetailResponseDto> findDetailTrouble(
+            @RequestParam(value = "page") int page,
+            @PathVariable Long troubleId){
+        TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId, page);
         return ResponseEntity.ok()
                 .body(troubleDetailResponseDto);
     }

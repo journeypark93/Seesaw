@@ -156,7 +156,7 @@ public class UserService {
     public UserInfoResponseDto findUserInfo(User user) {
         List<ProfileListDto> profileListDtos = findUserProfiles(user);
 
-        return new UserInfoResponseDto(user.getUsername(), user.getNickname(), profileListDtos);
+        return new UserInfoResponseDto(user.getUsername(), user.getNickname(), profileListDtos, user.getMbti(), user.getGeneration());
     }
 
     public String checkUser(UserCheckRequestDto userCheckRequestDto) {
