@@ -1,11 +1,13 @@
 package com.example.seesaw.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Crossword {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,5 +35,22 @@ public class Crossword {
     @ManyToOne
     @JoinColumn(name = "QuizNum_ID", nullable = false)
     private QuizNum quizNum;
+
+    @Column
+    private int overlappedX; // 겹치는 x 좌표
+
+    @Column
+    private int overlappedY; // 겹치는 y 좌표
+
+    public Crossword(int x, int y, String word, String contents, int wordCount, boolean isOriental, int overlappedX, int overlappedY){
+        this.x = x;
+        this.y = y;
+        this.word = word;
+        this.contents = contents;
+        this.wordCount = wordCount;
+        this.isOriental = isOriental;
+        this.overlappedX = overlappedX;
+        this.overlappedY = overlappedY;
+    }
 
 }

@@ -29,8 +29,8 @@ public class UserPageService {
 
     // 프로필 수정
     public void updateProfile(ProfileRequestDto profileRequestDto, User user) {
-        //닉네임 유효성 검사 후 저장
-        if(!profileRequestDto.getNickname().equals(user.getNickname())){
+        if(!profileRequestDto.getNickname().equals(user.getNickname())) {
+            //닉네임 유효성 검사 후 저장
             String nickname = userService.checkNickName(profileRequestDto.getNickname());
             user.setNickname(nickname);
             //고민댓글 nickname 변경
@@ -40,7 +40,7 @@ public class UserPageService {
                 troubleCommentRepository.save(troubleComment);
             }
             List<PostComment> postComments = postCommentRepository.findAllByNickname(user.getNickname());
-            for(PostComment postComment:postComments){
+            for (PostComment postComment : postComments) {
                 postComment.setNickname(profileRequestDto.getNickname());
                 postCommentRepository.save(postComment);
             }

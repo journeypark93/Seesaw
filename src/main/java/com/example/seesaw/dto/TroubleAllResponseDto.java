@@ -19,7 +19,7 @@ public class TroubleAllResponseDto {
     private String contents;
     private String question;
     private String answer;
-    private String postTime;
+    private String troubleTime;
     private Long views;
     private Long commentCount;
     private List<String> tagNames;

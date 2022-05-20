@@ -132,7 +132,7 @@ public class PostService {
 
     }
 
-    // 단어 상세 보기.
+    // 단어글 상세 보기.
     public PostDetailResponseDto findDetailPost(Long postId, int page, User user) {
         Post post = postRepository.findById(postId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
@@ -156,7 +156,7 @@ public class PostService {
 
         List<PostCommentDto> postCommentDtos = new ArrayList<>();
         for(PostComment postComment:postCommentPage){
-            PostCommentDto postCommentRequestDto = getPostCommentDto(user, postComment);
+            PostCommentDto postCommentRequestDto = getPostCommentDto(postComment.getPost().getUser(), postComment);
             postCommentDtos.add(postCommentRequestDto);
         }
         postDetailResponseDto.setPostComments(postCommentDtos);
@@ -164,6 +164,7 @@ public class PostService {
         return postDetailResponseDto;
     }
 
+    // 메서드 추출
     public PostDetailResponseDto getPostDetailResponseDto(User user, Post post, PostResponseDto postResponseDto) {
         PostDetailResponseDto postDetailResponseDto = new PostDetailResponseDto(postResponseDto);
         postDetailResponseDto.setNickname(user.getNickname()); //로그인한 사용자의 닉네임
@@ -183,6 +184,7 @@ public class PostService {
         return postDetailResponseDto;
     }
 
+    // 댓글 상세보기
     public PostCommentDto getPostCommentDto(User user, PostComment postComment) {
         PostCommentDto postCommentRequestDto = new PostCommentDto(postComment);
         User commentUser = userRepository.findByNickname(postComment.getNickname()).orElseThrow(

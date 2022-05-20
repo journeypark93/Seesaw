@@ -1,9 +1,6 @@
 package com.example.seesaw.service;
 
-import com.example.seesaw.dto.TroubleAllResponseDto;
-import com.example.seesaw.dto.TroubleCommentRequestDto;
-import com.example.seesaw.dto.TroubleDetailResponseDto;
-import com.example.seesaw.dto.TroubleDto;
+import com.example.seesaw.dto.*;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -87,7 +84,7 @@ public class TroubleService {
         for(TroubleImage troubleImage : troubleImages){
             if(troubleImage.getTroubleImage().equals("https://myseesaw.s3.ap-northeast-2.amazonaws.com/TroubleBaicCard.svg")){
                 break;
-            } else{
+            } else {
                 troubleImageList.add(troubleImage.getTroubleImage());
             }
         }
@@ -149,7 +146,7 @@ public class TroubleService {
         }
     }
 
-    //고민글 상세보기
+    // 고민 상세보기
     public TroubleDetailResponseDto findDetailTrouble(Long troubleId, int page) {
         Trouble trouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalArgumentException("고민 Id에 해당하는 글이 없습니다.")
@@ -160,7 +157,6 @@ public class TroubleService {
 
         Pageable pageable = PageRequest.of(page-1, 4);
         Page<TroubleComment> troubleCommentPage = troubleCommentRepository.findAllByTroubleIdOrderByLikeCountDesc(troubleId, pageable);
-
 
         List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleId(troubleId);
         troubleDetailResponseDto.setCommentCount((long) troubleComments.size());
@@ -177,7 +173,7 @@ public class TroubleService {
 
         return troubleDetailResponseDto;
     }
-
+    // 고민글 상세조회 중복 메서드 추출
     private TroubleDetailResponseDto getTroubleDetailResponseDto(Trouble trouble, TroubleDto troubleDto) {
         TroubleDetailResponseDto troubleDetailResponseDto = new TroubleDetailResponseDto(troubleDto);
         troubleDetailResponseDto.setNickname(trouble.getUser().getNickname());
@@ -215,7 +211,7 @@ public class TroubleService {
             troubleAllResponseDto.setNickname(trouble.getUser().getNickname());
             troubleAllResponseDto.setProfileImages(userService.findUserProfiles(trouble.getUser()));
             String postTime = convertTimeService.convertLocaldatetimeToTime(trouble.getCreatedAt());
-            troubleAllResponseDto.setPostTime(postTime);
+            troubleAllResponseDto.setTroubleTime(postTime);
             troubleAllResponseDto.setViews(trouble.getViews());
             List<TroubleComment> troubleComments = troubleCommentRepository.findAllByTroubleId(trouble.getId());
             troubleAllResponseDto.setCommentCount((long) troubleComments.size());
@@ -223,7 +219,6 @@ public class TroubleService {
         }
         return troubleAllResponseDtos;
     }
-
     // 댓글 리스폰스용
     public TroubleCommentRequestDto getTroubleCommentDto(User user, TroubleComment troubleComment) {
         TroubleCommentRequestDto troubleCommentRequestDto = new TroubleCommentRequestDto(troubleComment);
@@ -237,4 +232,24 @@ public class TroubleService {
         troubleCommentRequestDto.setCommentLikeStatus(savedTroubleCommentLike != null);
         return troubleCommentRequestDto;
     }
+
+    // TroubleCommentDto Response 용 메서드
+//    private TroubleCommentRequestDto getTroubleCommentDto(User user, TroubleComment troubleComment) {
+//        User commentUser = userRepository.findByNickname(troubleComment.getNickname()).orElseThrow(
+//                () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
+//        System.out.println(commentUser);
+//        // 댓글 등록할 시 response 해주는 용
+//        TroubleCommentRequestDto troubleCommentDto = new TroubleCommentRequestDto(troubleComment);
+//        System.out.println(troubleCommentDto);
+//        // 고민 댓글 시간
+//        String troubleCommentTime = convertTimeService.convertLocaldatetimeToTime(troubleComment.getCreatedAt());
+//        troubleCommentDto.setCommentTime(troubleCommentTime);
+//        // 프로필 이미지
+//        troubleCommentDto.setProfileImages(userService.findUserProfiles(commentUser));
+//        // 좋아요 눌렀는지 안눌렀는지 상태
+//        TroubleCommentLike savedTroubleCommentLike = troubleCommentLikeRepository.findByTroubleCommentAndUserId(troubleComment, user.getId());
+//        troubleCommentDto.setCommentLikeStatus(savedTroubleCommentLike != null);
+//        System.out.println(troubleCommentDto);
+//        return troubleCommentDto;
+//    }
 }

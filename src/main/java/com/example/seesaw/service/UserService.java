@@ -38,6 +38,7 @@ public class UserService {
     private final RedisService redisService;
     private static final String ADMIN_TOKEN = "AAABnv/xRVklrnYxKZ0aHgTBcXukeZygoC";
 
+    // 회원가입
     public void registerUser(SignupRequestDto requestDto) {
 
         String username = requestDto.getUsername();
@@ -156,7 +157,7 @@ public class UserService {
     public UserInfoResponseDto findUserInfo(User user) {
         List<ProfileListDto> profileListDtos = findUserProfiles(user);
 
-        return new UserInfoResponseDto(user.getUsername(), user.getNickname(), profileListDtos, user.getMbti(), user.getGeneration());
+        return new UserInfoResponseDto(user.getUsername(), user.getNickname(),user.getMbti(),user.getGeneration(), profileListDtos);
     }
 
     public String checkUser(UserCheckRequestDto userCheckRequestDto) {

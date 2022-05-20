@@ -43,7 +43,7 @@ public class UserController {
     }
 
     //accessToken 만료 시 refreshToken 유효한지 확인 후 accessToken 재발급
-    @PostMapping("/refresh")
+    @PostMapping("user/refresh")
     public ResponseEntity<String> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
         String accessToken = userService.refreshToken(refreshTokenDto);
         return ResponseEntity.ok()
