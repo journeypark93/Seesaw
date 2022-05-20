@@ -1,9 +1,6 @@
 package com.example.seesaw.controller;
 
-import com.example.seesaw.dto.MyScrapResponseDto;
-import com.example.seesaw.dto.MyTroublesResponseDto;
-import com.example.seesaw.dto.ProfileRequestDto;
-import com.example.seesaw.dto.UserInfoResponseDto;
+import com.example.seesaw.dto.*;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.TroubleService;
 import com.example.seesaw.service.UserPageService;
