@@ -156,7 +156,7 @@ public class PostService {
 
         List<PostCommentDto> postCommentDtos = new ArrayList<>();
         for(PostComment postComment:postCommentPage){
-            PostCommentDto postCommentRequestDto = getPostCommentDto(postComment.getPost().getUser(), postComment);
+            PostCommentDto postCommentRequestDto = getPostCommentDto(user, postComment);
             postCommentDtos.add(postCommentRequestDto);
         }
         postDetailResponseDto.setPostComments(postCommentDtos);

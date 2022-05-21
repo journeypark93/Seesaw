@@ -169,6 +169,8 @@ public class TroubleService {
             TroubleCommentRequestDto troubleCommentRequestDto = new TroubleCommentRequestDto(troubleComment);
             User user = userRepository.findByNickname(troubleComment.getNickname()).orElseThrow(
                     () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
+            TroubleCommentLike savedPostCommentLike = troubleCommentLikeRepository.findByTroubleCommentAndUserId(troubleComment, user1.getId());
+            troubleCommentRequestDto.setCommentLikeStatus(savedPostCommentLike != null); // status
             troubleCommentRequestDto.setProfileImages(userService.findUserProfiles(user));
             troubleCommentRequestDtos.add(troubleCommentRequestDto);
         }
