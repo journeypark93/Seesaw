@@ -17,5 +17,6 @@ public interface TroubleCommentRepository extends JpaRepository<TroubleComment, 
 
     long countByTroubleId(Long id);
 
+    // 고민몬든걸 최신순으로 가져오기
     List<TroubleComment> findAllByTroubleIdOrderByCreatedAtDesc(Long troubleId);
 }

@@ -247,16 +247,16 @@ public class PostService {
 
     // 검색
     private PostSearchResponseDto convertEntityToDto(Post post, User user) {
-        //List<PostComment> postComments = postCommentRepository.findAllByPostId(post.getId());
+//        List<PostComment> postComments = postCommentRepository.findAllByPostId(post.getId());
         PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
         boolean scrapStatus = savedPostScrap != null;
         int size = postScrapRepository.findAllByPostId(post.getId()).size();
         return PostSearchResponseDto.builder()
-                .postId(post.getId())
+                .id(post.getId())
                 .title(post.getTitle())
                 .contents(post.getContents())
                 .generation(post.getGeneration())
-                .views(post.getViews())
+                .views((long)post.getViews())
                 .scrapCount((long)size)
                 .postImage(post.getPostImages().get(0).getPostImage())
                 .scrapStatus(scrapStatus)
@@ -297,7 +297,7 @@ public class PostService {
 
         return postScrapSortResponseDtos;
     }
-    //랜덤으로 2개 조회
+
     public List<PostScrapSortResponseDto> findRandomPosts() {
         List<PostScrapSortResponseDto> postScrapSortResponseDtos = new ArrayList<>();
         //게시글의 개수를 구한다.

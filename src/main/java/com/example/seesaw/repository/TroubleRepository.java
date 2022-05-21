@@ -11,7 +11,11 @@ public interface TroubleRepository extends JpaRepository<Trouble, Long> {
 
     List<Trouble> findAllByUserId(Long id);
 
-    Page<Trouble> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    List<Trouble> findAllByOrderByCreatedAtDesc();
 
+    List<Trouble> findAllByOrderByViewsDesc();
+
+    Page<Trouble> findAllByOrderByCreatedAtDesc(Pageable pageable);
     List<Trouble> findAllByAnswerOrderByViewsDesc(String generation);
+
 }

@@ -1,6 +1,5 @@
 package com.example.seesaw.dto;
 
-import com.example.seesaw.model.PostImage;
 import com.example.seesaw.model.Trouble;
 import com.example.seesaw.model.TroubleImage;
 import lombok.AllArgsConstructor;

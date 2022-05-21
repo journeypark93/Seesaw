@@ -1,8 +1,9 @@
 package com.example.seesaw.service;
 
-import com.example.seesaw.dto.PostCommentDto;
 import com.example.seesaw.dto.TroubleCommentRequestDto;
-import com.example.seesaw.model.*;
+import com.example.seesaw.model.Trouble;
+import com.example.seesaw.model.TroubleComment;
+import com.example.seesaw.model.User;
 import com.example.seesaw.repository.TroubleCommentLikeRepository;
 import com.example.seesaw.repository.TroubleCommentRepository;
 import com.example.seesaw.repository.TroubleRepository;
@@ -19,6 +20,9 @@ public class TroubleCommentService {
     private final TroubleRepository troubleRepository;
     private final TroubleCommentRepository troublecommentRepository;
     private final UserRepository userRepository;
+    private final TroubleCommentLikeRepository troubleCommentLikeRepository;
+    private final UserService userService;
+    private final ConvertTimeService convertTimeService;
     private final TroubleService troubleService;
 
     // 댓글 등록하기
@@ -29,7 +33,7 @@ public class TroubleCommentService {
         troubleCommentRequestDto.setNickname(commentUser.getNickname());
         Trouble savedTrouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalStateException("해당 게시글이 없습니다."));
-        troubleCommentRequestDto.setCommentLikeCount(0L);
+        troubleCommentRequestDto.setCommentLikeCount(0L); // 0으로 초기화
         TroubleComment troubleComment = new TroubleComment(savedTrouble, troubleCommentRequestDto);
         troublecommentRepository.save(troubleComment);
 
@@ -52,10 +56,10 @@ public class TroubleCommentService {
     public TroubleCommentRequestDto deleteComment(Long commentId, User user) {
         TroubleComment troubleComment = checkCommentUser(commentId, user);
         List<TroubleComment> troubleCommentList = troublecommentRepository.findAllByTroubleIdOrderByCreatedAtDesc(troubleComment.getTrouble().getId());
-        int index = troubleCommentList.indexOf(troubleComment); // index 0,1,2,3/4,5,6,7/8,9,10,11
+        int index = troubleCommentList.indexOf(troubleComment); // index 0,1,2,3/4,5,6,7/8,9,10,11/12,13,14,15
         troublecommentRepository.deleteById(commentId);
         int a = index / 4 +1;                             // 삭제한 댓글의 쪽을 구한다.
-        if(a == (troubleCommentList.size() -1) / 4 +1){                   // 댓글이 4개 이하일 경우나 마지막 쪽수의 댓글은 null로 보낸다.
+        if(a == (troubleCommentList.size()-1)/ 4 +1){                   // 댓글이 4개 이하일 경우는 댓글 개수만 보낸다.
             return null;
         }
         return troubleService.getTroubleCommentDto(user, troubleCommentList.get(a*4));    // 쪽에 4를 곱해서 다음 페이지의 맨 처음 댓글을 가져온다.

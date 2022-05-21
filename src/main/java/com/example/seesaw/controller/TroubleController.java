@@ -5,7 +5,6 @@ import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleDto;
 import com.example.seesaw.repository.TroubleRepository;
 import com.example.seesaw.security.UserDetailsImpl;
-import com.example.seesaw.service.TroubleCommentLikeService;
 import com.example.seesaw.service.TroubleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -65,8 +64,8 @@ public class TroubleController {
     @GetMapping("/api/trouble/{troubleId}/detail")
     public ResponseEntity<TroubleDetailResponseDto> findDetailTrouble(
             @RequestParam(value = "page") int page,
-            @PathVariable Long troubleId){
-        TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId, page);
+            @PathVariable Long troubleId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId, page, userDetails.getUser());
         return ResponseEntity.ok()
                 .body(troubleDetailResponseDto);
     }

@@ -22,8 +22,8 @@ public class PostSearchResponseDto {
 
 
     @Builder
-    public PostSearchResponseDto(Long postId, String title, String contents, String generation, Long views, Long scrapCount,String postImage ,boolean scrapStatus) {
-        this.postId = postId;
+    public PostSearchResponseDto(Long id, String title, String contents, String generation, Long views, Long scrapCount,String postImage ,boolean scrapStatus) {
+        this.postId = id;
         this.title = title;
         this.contents = contents;
         this.generation = generation;

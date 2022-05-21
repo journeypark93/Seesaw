@@ -32,6 +32,7 @@ public class PostCommentLikeService {
             postCommentLikeRepository.deleteById(savedLike.getId());
             postComment.setLikeCount(postComment.getLikeCount()-1); //고민댓글 좋아요 수 -1
             postCommentRepository.save(postComment);
+
         } else{
             PostCommentLike postCommentLike = new PostCommentLike(postComment, user);
             postCommentLikeRepository.save(postCommentLike);

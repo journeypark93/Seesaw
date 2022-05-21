@@ -20,7 +20,7 @@ public class TroubleCommentRequestDto {
     private String comment;
     private String commentTime; // 댓글 등록한 시간
     private Long commentLikeCount;
-    private Long commentCount;
+//    private Long commentCount;
     List<ProfileListDto> ProfileImages;
     private boolean commentLikeStatus; // 좋아요 눌렀는지 상태
 
@@ -30,8 +30,8 @@ public class TroubleCommentRequestDto {
         this.comment = troubleComment.getComment();
     }
 
-    public TroubleCommentRequestDto(int commentCount) {
-        this.commentCount = (long) commentCount;
-    }
+//    public TroubleCommentRequestDto(int commentCount) {
+//        this.commentCount = (long) commentCount;
+//    }
 
 }
