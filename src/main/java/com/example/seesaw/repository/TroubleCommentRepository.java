@@ -11,11 +11,11 @@ public interface TroubleCommentRepository extends JpaRepository<TroubleComment, 
 
     List<TroubleComment> findAllByNickname(String nickname);
 
-    List<TroubleComment> findAllByTroubleIdOrderByLikeCountDesc(Long troubleId);
-    Page<TroubleComment> findAllByTroubleIdOrderByLikeCountDesc(Long troubleId, Pageable pageable);
+    Page<TroubleComment> findAllByTroubleIdOrderByCreatedAtDesc(Long troubleId, Pageable pageable);
 
     List<TroubleComment> findAllByTroubleId(Long id);
 
     long countByTroubleId(Long id);
 
+    List<TroubleComment> findAllByTroubleIdOrderByCreatedAtDesc(Long troubleId);
 }

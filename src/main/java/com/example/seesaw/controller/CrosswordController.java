@@ -1,7 +1,9 @@
 package com.example.seesaw.controller;
 
 import com.example.seesaw.dto.CrossWordResponseDto;
-import com.example.seesaw.service.CrosswordService;
+import com.example.seesaw.service.Board;
+import com.example.seesaw.service.CrosswordServiceTest;
+import com.example.seesaw.service.CrosswordServiceVER1;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,15 +15,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CrosswordController {
 
-    private final CrosswordService crosswordService;
-
     // 게임판 단어까지 자동생성
     @GetMapping("/api/crossword")
-    public ResponseEntity<List<CrossWordResponseDto>> test(){
-        List<CrossWordResponseDto> crossWordResponseDtos = crosswordService.getWord();
+    public ResponseEntity<String> test(){
+        new Board();
 
         return ResponseEntity.ok()
-                .body(crossWordResponseDtos);
+                .body("");
     }
-
 }

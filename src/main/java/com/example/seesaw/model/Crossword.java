@@ -33,24 +33,17 @@ public class Crossword {
     private boolean isOriental; // 가로면 true, 세로면 false
 
     @ManyToOne
-    @JoinColumn(name = "QuizNum_ID", nullable = false)
+    @JoinColumn(name = "QuizNum_ID")
     private QuizNum quizNum;
 
-    @Column
-    private int overlappedX; // 겹치는 x 좌표
-
-    @Column
-    private int overlappedY; // 겹치는 y 좌표
-
-    public Crossword(int x, int y, String word, String contents, int wordCount, boolean isOriental, int overlappedX, int overlappedY){
+    public Crossword(int x, int y, String word, String contents, int wordCount, boolean isOriental, QuizNum quizNum){
         this.x = x;
         this.y = y;
         this.word = word;
         this.contents = contents;
         this.wordCount = wordCount;
         this.isOriental = isOriental;
-        this.overlappedX = overlappedX;
-        this.overlappedY = overlappedY;
+        this.quizNum = quizNum;
     }
 
 }

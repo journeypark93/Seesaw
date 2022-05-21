@@ -2,6 +2,8 @@ package com.example.seesaw.repository;
 
 
 import com.example.seesaw.model.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
@@ -19,8 +21,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findTop9ByOrderByCreatedAtDesc();
 
-    List<Post> findAllByOrderByCreatedAtDesc();
-
     // 등록된 단어 중 내가 첫 작성자인것 가져오기
     List<Post> findAllByFirstWriter(String firstWriter);
+
+    Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
 }

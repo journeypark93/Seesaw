@@ -1,5 +1,6 @@
 package com.example.seesaw.service;
 
+import com.example.seesaw.dto.PostCommentDto;
 import com.example.seesaw.dto.TroubleCommentRequestDto;
 import com.example.seesaw.model.*;
 import com.example.seesaw.repository.TroubleCommentLikeRepository;
@@ -9,6 +10,8 @@ import com.example.seesaw.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TroubleCommentService {
@@ -16,9 +19,6 @@ public class TroubleCommentService {
     private final TroubleRepository troubleRepository;
     private final TroubleCommentRepository troublecommentRepository;
     private final UserRepository userRepository;
-    private final TroubleCommentLikeRepository troubleCommentLikeRepository;
-    private final UserService userService;
-    private final ConvertTimeService convertTimeService;
     private final TroubleService troubleService;
 
     // 댓글 등록하기
@@ -29,7 +29,7 @@ public class TroubleCommentService {
         troubleCommentRequestDto.setNickname(commentUser.getNickname());
         Trouble savedTrouble = troubleRepository.findById(troubleId).orElseThrow(
                 () -> new IllegalStateException("해당 게시글이 없습니다."));
-//        troubleCommentRequestDto.setLikeCount(0L);
+        troubleCommentRequestDto.setCommentLikeCount(0L);
         TroubleComment troubleComment = new TroubleComment(savedTrouble, troubleCommentRequestDto);
         troublecommentRepository.save(troubleComment);
 
@@ -44,19 +44,21 @@ public class TroubleCommentService {
         troubleComment.setNickname(user.getNickname());
         troubleComment.setComment(troubleCommentRequestDto.getComment());
         troublecommentRepository.save(troubleComment);
-
-        User commentUser = userRepository.findById(user.getId()).orElseThrow(
-                () -> new IllegalStateException("해당하는 USER 가 없습니다.")
-        );
-
         // 댓글 등록할 시 TroubleCommentDto 내용을 response 해준다.
         return troubleService.getTroubleCommentDto(user,troubleComment);
     }
 
     // 댓글 삭제하기
-    public void deleteComment(Long commentId, User user) {
-        checkCommentUser(commentId, user);
+    public TroubleCommentRequestDto deleteComment(Long commentId, User user) {
+        TroubleComment troubleComment = checkCommentUser(commentId, user);
+        List<TroubleComment> troubleCommentList = troublecommentRepository.findAllByTroubleIdOrderByCreatedAtDesc(troubleComment.getTrouble().getId());
+        int index = troubleCommentList.indexOf(troubleComment); // index 0,1,2,3/4,5,6,7/8,9,10,11
         troublecommentRepository.deleteById(commentId);
+        int a = index / 4 +1;                             // 삭제한 댓글의 쪽을 구한다.
+        if(a == (troubleCommentList.size() -1) / 4 +1){                   // 댓글이 4개 이하일 경우나 마지막 쪽수의 댓글은 null로 보낸다.
+            return null;
+        }
+        return troubleService.getTroubleCommentDto(user, troubleCommentList.get(a*4));    // 쪽에 4를 곱해서 다음 페이지의 맨 처음 댓글을 가져온다.
     }
 
     // 댓글 유저 확인하기
