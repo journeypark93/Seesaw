@@ -15,10 +15,9 @@ public class CrossWordResponseDto {
     private int wordCount; // 글자수
     private boolean isOriental; // 가로면 true, 세로면 false
     private Long quizId; // 퀴즈 번호
-//    private int overlappedX; // 겹치는 x 좌표
-//    private int overlappedY; // 겹치는 y 좌쵸
+    private boolean pass; // 문제 정답 status
 
-    public CrossWordResponseDto(Crossword crossword){
+    public CrossWordResponseDto(Crossword crossword, boolean pass){
         this.id = crossword.getId();
         this.x = crossword.getX();
         this.y = crossword.getY();
@@ -27,8 +26,7 @@ public class CrossWordResponseDto {
         this.wordCount = crossword.getWordCount();
         this.isOriental = crossword.isOriental();
         this.quizId = crossword.getQuizNum().getId();
-//        this.overlappedX = crossword.getOverlappedX();
-//        this.overlappedY = crossword.getOverlappedY();
+        this.pass = pass;
     }
 
 }

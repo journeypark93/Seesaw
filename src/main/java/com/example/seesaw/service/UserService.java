@@ -97,7 +97,6 @@ public class UserService {
     //비밀번호 유효성 검사
     private void checkUserPw(String pwd, String pwdCheck) {
         Pattern userPwPattern = Pattern.compile("^(?=.*\\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{6,20}$");
-
         Matcher userPwMatcher = userPwPattern.matcher(pwd);
         if (pwd.length() == 0) {
             throw new CustomException(ErrorCode.BLANK_USER_PW);

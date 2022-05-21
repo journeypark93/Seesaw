@@ -196,7 +196,12 @@ public class PostService {
         Long size = (long) postCommentRepository.findAllByPostId(postComment.getPost().getId()).size();
         postCommentRequestDto.setCommentCount(size);
         PostCommentLike savedPostCommentLike = postCommentLikeRepository.findByPostCommentAndUserId(postComment, user.getId());
-        postCommentRequestDto.setCommentLikeStatus(savedPostCommentLike != null);
+        if (savedPostCommentLike!=null){
+            postCommentRequestDto.setCommentLikeStatus(true);
+        }else{
+            postCommentRequestDto.setCommentLikeStatus(false);
+        }
+
         return postCommentRequestDto;
     }
 
