@@ -169,7 +169,17 @@ public class TroubleService {
             TroubleCommentRequestDto troubleCommentRequestDto = new TroubleCommentRequestDto(troubleComment);
             User user = userRepository.findByNickname(troubleComment.getNickname()).orElseThrow(
                     () -> new IllegalArgumentException("고민댓글에 해당하는 사용자를 찾을 수 없습니다."));
+            // commentTime
+            String postCommentTime = convertTimeService.convertLocaldatetimeToTime(troubleComment.getCreatedAt());
+            troubleCommentRequestDto.setCommentTime(postCommentTime);
+            // commentLikeCount
+            troubleCommentRequestDto.setCommentLikeCount(troubleComment.getLikeCount());
+            // 현재 로그인한 사람의 댓글 좋아요 상태
+            TroubleCommentLike savedPostCommentLike = troubleCommentLikeRepository.findByTroubleCommentAndUserId(troubleComment, user1.getId());
+            troubleCommentRequestDto.setCommentLikeStatus(savedPostCommentLike != null); // status
+            // 프로필이미지
             troubleCommentRequestDto.setProfileImages(userService.findUserProfiles(user));
+            // 리스트에 넣기
             troubleCommentRequestDtos.add(troubleCommentRequestDto);
         }
         troubleDetailResponseDto.setTroubleComments(troubleCommentRequestDtos);
