@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PostSearchResponseDto {
 
-    private Long id;
+    private Long postId;
     private String title;
     private String contents;
     private String generation;
@@ -23,7 +23,7 @@ public class PostSearchResponseDto {
 
     @Builder
     public PostSearchResponseDto(Long id, String title, String contents, String generation, Long views, Long scrapCount,String postImage ,boolean scrapStatus) {
-        this.id = id;
+        this.postId = id;
         this.title = title;
         this.contents = contents;
         this.generation = generation;
@@ -35,7 +35,7 @@ public class PostSearchResponseDto {
 
     public Post toEntity() {
         Post build = Post.builder()
-                .id(id)
+                .id(postId)
                 .title(title)
                 .contents(contents)
                 .generation(generation)

@@ -5,7 +5,6 @@ import com.example.seesaw.dto.TroubleDetailResponseDto;
 import com.example.seesaw.dto.TroubleDto;
 import com.example.seesaw.repository.TroubleRepository;
 import com.example.seesaw.security.UserDetailsImpl;
-import com.example.seesaw.service.TroubleCommentLikeService;
 import com.example.seesaw.service.TroubleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -65,24 +64,26 @@ public class TroubleController {
     @GetMapping("/api/trouble/{troubleId}/detail")
     public ResponseEntity<TroubleDetailResponseDto> findDetailTrouble(
             @RequestParam(value = "page") int page,
-            @PathVariable Long troubleId){
-        TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId, page);
+            @PathVariable Long troubleId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        TroubleDetailResponseDto troubleDetailResponseDto = troubleService.findDetailTrouble(troubleId, page, userDetails.getUser());
         return ResponseEntity.ok()
                 .body(troubleDetailResponseDto);
     }
 
     //고민글 전체 조회(최근 작성 순)
     @GetMapping("/api/trouble/list")
-    public ResponseEntity<List<TroubleAllResponseDto>> findAllTroubles(){
-        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findAllTroubles();
+    public ResponseEntity<List<TroubleAllResponseDto>> findAllTroubles(
+            @RequestParam(value = "page") int page){
+        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findAllTroubles(page);
         return ResponseEntity.ok()
                 .body(troubleAllResponseDto);
     }
 
     //고민글 전체 조회(조회수 순)
     @GetMapping("/api/main/trouble/list")
-    public ResponseEntity<List<TroubleAllResponseDto>> findViewTroubles(){
-        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findViewTroubles();
+    public ResponseEntity<List<TroubleAllResponseDto>> findViewTroubles(
+            @AuthenticationPrincipal UserDetailsImpl userDetails){
+        List<TroubleAllResponseDto> troubleAllResponseDto = troubleService.findViewTroubles(userDetails.getUser());
         return ResponseEntity.ok()
                 .body(troubleAllResponseDto);
     }

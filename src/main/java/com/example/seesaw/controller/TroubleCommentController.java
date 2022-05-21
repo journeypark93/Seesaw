@@ -6,7 +6,6 @@ import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.service.TroubleCommentLikeService;
 import com.example.seesaw.service.TroubleCommentService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -46,17 +45,17 @@ public class TroubleCommentController {
 
     // 고민글 댓글 삭제
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<String> deleteComment(
+    public ResponseEntity<TroubleCommentRequestDto> deleteComment(
             @PathVariable Long commentId,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        troubleCommentService.deleteComment(commentId, userDetails.getUser());
+        TroubleCommentRequestDto troubleCommentRequestDto = troubleCommentService.deleteComment(commentId, userDetails.getUser());
         return ResponseEntity.ok()
-                .body("고민글 댓글삭제 완료");
+                .body(troubleCommentRequestDto);
     }
 
     // 고민 댓글 좋아요/취소
-    @PostMapping("/api/trouble/{commentId}/like")
-    public boolean getGoods(@PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails){
-        return troubleCommentLikeService.getLikes(commentId, userDetails.getUser());
+    @PostMapping("/{commentId}/like")
+    public TroubleCommentRequestDto getGoods(@PathVariable Long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return troubleCommentLikeService.getTroubleCommentLikes(commentId, userDetails.getUser());
     }
 }

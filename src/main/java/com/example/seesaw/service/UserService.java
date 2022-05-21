@@ -44,7 +44,7 @@ public class UserService {
         String username = requestDto.getUsername();
         checkUserName(username);
         String generation = requestDto.getGeneration();
-        MbtiRequestDto mbtiRequestDto = new MbtiRequestDto(requestDto.getEnergy(), requestDto.getInsight(), requestDto.getJudgement(), requestDto.getLifePattern());
+        MbtiRequestDto mbtiRequestDto = new MbtiRequestDto(requestDto.getId(),requestDto.getEnergy(), requestDto.getInsight(), requestDto.getJudgement(), requestDto.getLifePattern());
         String mbti = checkMbti(mbtiRequestDto);
         String nickname = requestDto.getNickname();
         checkNickName(nickname);

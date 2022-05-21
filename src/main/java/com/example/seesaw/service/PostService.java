@@ -247,7 +247,7 @@ public class PostService {
 
     // 검색
     private PostSearchResponseDto convertEntityToDto(Post post, User user) {
-        List<PostComment> postComments = postCommentRepository.findAllByPostId(post.getId());
+//        List<PostComment> postComments = postCommentRepository.findAllByPostId(post.getId());
         PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
         boolean scrapStatus = savedPostScrap != null;
         int size = postScrapRepository.findAllByPostId(post.getId()).size();
@@ -265,9 +265,14 @@ public class PostService {
 
 
     // 최신순으로 단어 전체 리스트 페이지 조회
-    public List<PostListResponseDto> findListPosts(User user){
-        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
+
+    public List<PostListResponseDto> findListPosts(int page, User user){
         List<PostListResponseDto> postListResponseDtos = new ArrayList<>();
+
+
+        Pageable pageable = PageRequest.of(page-1, 30);
+        Page<Post> posts = postRepository.findAllByOrderByCreatedAtDesc(pageable);
+
         for (Post post: posts) {
             PostScrap savedPostScrap = postScrapRepository.findByUserAndPost(user, post);
             boolean scrapStatus = savedPostScrap != null;
