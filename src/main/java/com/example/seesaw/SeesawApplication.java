@@ -13,8 +13,11 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class SeesawApplication {
 
+
     public static void main(String[] args) {
+
         SpringApplication.run(SeesawApplication.class, args);
+
     }
 
     @PostConstruct

@@ -42,7 +42,7 @@ public class User {
     private UserRoleEnum role;
 
     @Column(unique = true)
-    private Long kakaoId;
+    private String kakaoId;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserProfileNum> userProfileNum;
@@ -60,7 +60,7 @@ public class User {
     }
 
 
-    public User(String username, String enPassword, Long postCount, UserRoleEnum role, Long kakaoId) {
+    public User(String username, String enPassword, Long postCount, UserRoleEnum role, String kakaoId) {
         this.username = username;
         this.pwd = enPassword;
         this.postCount = postCount;
@@ -69,7 +69,19 @@ public class User {
     }
 
 
+    public User(String kakaoUsername, String encodedPassword, String nickname, String generation, Long postCount, String mbti, UserRoleEnum user, String kakaoId) {
+        this.username = kakaoUsername;
+        this.pwd = encodedPassword;
+        this.nickname = nickname;
+        this.generation = generation;
+        this.postCount = postCount;
+        this.mbti = mbti;
+        this.role = user;
+        this.kakaoId = kakaoId;
+    }
+
     public User(List<UserProfileNum> userProfileNum){
         this.userProfileNum = userProfileNum;
     }
+
 }

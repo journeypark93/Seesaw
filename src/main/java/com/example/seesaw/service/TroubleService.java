@@ -37,7 +37,7 @@ public class TroubleService {
         List<String> imagePaths = new ArrayList<>();
 
         if(files == null){
-            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/TroubleBaicCard.svg");
         } else {
             imagePaths.addAll(troubleS3Service.upload(files));
         }
@@ -111,7 +111,7 @@ public class TroubleService {
 
         List<String> imagePaths = new ArrayList<>();
         if(files == null && troubleDto.getTroubleImages().isEmpty()){
-            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/ddddd23sdfasf.jpg");
+            imagePaths.add("https://myseesaw.s3.ap-northeast-2.amazonaws.com/TroubleBaicCard.svg");
             troubleS3Service.delete(troubleId, troubleDto.getTroubleImages());
             troubleImageRepository.deleteAllByTroubleId(troubleId);
         } else if(files!=null) {

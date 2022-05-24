@@ -21,11 +21,10 @@ public enum ErrorCode {
     DUPLICATED_USER_NAME(HttpStatus.BAD_REQUEST, "400_9", "유저아이디가 이미 존재합니다."),
     DUPLICATED_USER_NICKNAME(HttpStatus.BAD_REQUEST, "400_10", "유저닉네임이 이미 존재합니다."),
     BLANK_USER_MBTI(HttpStatus.BAD_REQUEST, "400_11", "MBTI 전부 체크해주세요. null이 있습니다."),
+    BLANK_KAKAO_USER_INFO(HttpStatus.BAD_REQUEST, "400_12", "카카오로그인 회원가입이 완료되지 않았습니다."),
 
     // 404 Not Found
-    NOT_FOUND_USER_ID(HttpStatus.NOT_FOUND, "404_1", "유저 아이디가 존재하지 않습니다."),
-    NOT_FOUND_LOCATION_ID(HttpStatus.NOT_FOUND, "404_2", "지역 코드가 존재하지 않습니다."),
-    NOT_FOUND_CATEGORY_ID(HttpStatus.NOT_FOUND, "404_2", "카테고리 코드가 존재하지 않습니다.")
+    NOT_FOUND_USER_ID(HttpStatus.NOT_FOUND, "404_1", "유저 아이디가 존재하지 않습니다.")
     ;
 
     private final HttpStatus httpStatus;

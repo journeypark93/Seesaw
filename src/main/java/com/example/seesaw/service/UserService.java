@@ -45,6 +45,10 @@ public class UserService {
         checkUserName(username);
         String generation = requestDto.getGeneration();
         MbtiRequestDto mbtiRequestDto = new MbtiRequestDto(requestDto.getId(),requestDto.getEnergy(), requestDto.getInsight(), requestDto.getJudgement(), requestDto.getLifePattern());
+        //mbti 설정 시, 비밀번호 id가 없으면 가입을 못하도록 함.
+        if(mbtiRequestDto.getId() == null) {
+            throw new CustomException(ErrorCode.BLANK_USER_NAME);
+        }
         String mbti = checkMbti(mbtiRequestDto);
         String nickname = requestDto.getNickname();
         checkNickName(nickname);
@@ -138,9 +142,12 @@ public class UserService {
     }
 
     public String checkMbti(MbtiRequestDto mbtiRequestDto) {
+
+        //mbti 설정 시, 비밀번호 id가 없으면 가입을 못하도록 함.
         if(mbtiRequestDto.getId() == null) {
             throw new CustomException(ErrorCode.BLANK_USER_NAME);
         }
+
         String mbtiName = mbtiRequestDto.getEnergy() + mbtiRequestDto.getInsight() + mbtiRequestDto.getJudgement() + mbtiRequestDto.getLifePattern();
         if (mbtiName.length() != 4 || mbtiName.contains("null")) {
             throw new CustomException(ErrorCode.BLANK_USER_MBTI);
@@ -156,8 +163,11 @@ public class UserService {
     @Transactional
     public UserInfoResponseDto findUserInfo(User user) {
         List<ProfileListDto> profileListDtos = findUserProfiles(user);
-
-        return new UserInfoResponseDto(user.getUsername(), user.getNickname(),user.getMbti(),user.getGeneration(), profileListDtos);
+        String username = user.getUsername();
+        if(user.getKakaoId()!= null){
+            username = user.getKakaoId();
+        }
+        return new UserInfoResponseDto(username, user.getNickname(),user.getMbti(),user.getGeneration(), profileListDtos);
     }
 
     public String checkUser(UserCheckRequestDto userCheckRequestDto) {
