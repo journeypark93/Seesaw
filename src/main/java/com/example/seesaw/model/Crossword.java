@@ -1,6 +1,6 @@
 package com.example.seesaw.model;
 
-import com.example.seesaw.crossword.Word;
+import com.example.seesaw.game.Word;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +15,7 @@ public class Crossword {
     @Id
     private Long id;
 
-    @Column()
+    @Column
     private int x;                  // x좌표
 
     @Column
@@ -37,7 +37,16 @@ public class Crossword {
     @JoinColumn(name = "QuizNum_ID")
     private QuizNum quizNum;
 
-    public Crossword(Word word, QuizNum quizNum) {
+    public Crossword(int x, int y, String word, String contents, int wordCount, boolean isOriental){
+        this.x = x;
+        this.y = y;
+        this.word = word;
+        this.contents = contents;
+        this.wordCount = wordCount;
+        this.isOriental = isOriental;
+    }
+
+    public Crossword (Word word, QuizNum quizNum){
         this.x = word.getX();
         this.y = word.getY();
         this.word = word.getName();
@@ -46,4 +55,5 @@ public class Crossword {
         this.isOriental = word.getDirection().toString().equals("RIGHT");
         this.quizNum = quizNum;
     }
+
 }

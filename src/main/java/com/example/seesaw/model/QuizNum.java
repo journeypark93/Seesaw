@@ -3,14 +3,12 @@ package com.example.seesaw.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuizNum {
@@ -18,10 +16,20 @@ public class QuizNum {
     @Id
     private Long id;
 
-    @OneToMany(mappedBy = "quizNum")
+    @Column
+    private Long quizNumber;
+
+    @OneToMany(mappedBy = "quizNum",cascade = CascadeType.ALL)
+    @Column
     private List<Crossword> crosswords;
 
-    public QuizNum(Long quizNumber) {
-        this.id = quizNumber;
+    public QuizNum(Long quizNumber, List<Crossword> crossword) {
+        this.quizNumber = quizNumber;
+        this.crosswords = crossword;
+    }
+
+    // 목업용 (지울예정)
+    public QuizNum(Long id){
+        this.id = id;
     }
 }
