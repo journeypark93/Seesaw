@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.example.seesaw.model.PostImage;
 import com.example.seesaw.model.TroubleImage;
 import com.example.seesaw.repository.TroubleImageRepository;
 import lombok.RequiredArgsConstructor;
@@ -87,27 +88,25 @@ public class TroubleS3Service {
     public void delete(Long troubleId, List<String> imageUrls) {   //imageUrls 는 지우면 안되는 것들
         List<TroubleImage> savedImages = troubleImageRepository.findAllByTroubleId(troubleId);
 
-        List<String> lastImages = new ArrayList<>();
-        for (TroubleImage savedImage: savedImages){
-            lastImages.add(savedImage.getTroubleImage());
-        }
-        if(imageUrls != null){
-            lastImages.removeAll(imageUrls);
+        for (TroubleImage savedImage: savedImages) {
+            //살리고 싶은 이미지에 기존에 저장된 이미지가 포함되어 있다면, 지워야할 이미지에서 지워라!
+            if(imageUrls != null && imageUrls.contains(savedImage.getTroubleImage())){
+                savedImages.remove(savedImage);
+            }
         }
 
-        for (String lastImage : lastImages) {
-            if (!lastImage.equals("")) {
-                String image = lastImage.replace("https://myseesaw.s3.ap-northeast-2.amazonaws.com/", "");
+        for (TroubleImage savedImage : savedImages) {
+            if (!savedImage.getTroubleImage().equals("https://myseesaw.s3.ap-northeast-2.amazonaws.com/TroubleBaicCard.svg")) {
+                String image = savedImage.getTroubleImage().replace("https://myseesaw.s3.ap-northeast-2.amazonaws.com/", "");
                 boolean isExistObject = s3Client.doesObjectExist(bucket, image);
                 System.out.println("지워야할 url 주소 : " + image);
-                System.out.println("앞에 지운 url 주소 : " + image);
                 System.out.println("isExistObject : " + isExistObject);
                 if (isExistObject) {
                     s3Client.deleteObject(bucket, image);
                 }
             }
-            System.out.println(lastImage);
-            troubleImageRepository.deleteByTroubleImage(lastImage);
+            System.out.println(savedImage.getTroubleImage());
+            troubleImageRepository.deleteById(savedImage.getId());
         }
     }
 

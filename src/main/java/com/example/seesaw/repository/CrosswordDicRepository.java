@@ -17,4 +17,7 @@ public interface CrosswordDicRepository extends JpaRepository<CrosswordDic, Long
     List<CrosswordDic> findAllByTitleContaining(String oneWord);
 
     List<Post> findByTitleContainingOrContentsContaining(@Param("title") String title, @Param("contents") String contents);
+
+    CrosswordDic findByTitle(String word);
+
 }

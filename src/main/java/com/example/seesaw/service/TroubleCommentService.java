@@ -18,9 +18,6 @@ public class TroubleCommentService {
     private final TroubleRepository troubleRepository;
     private final TroubleCommentRepository troublecommentRepository;
     private final UserRepository userRepository;
-    private final TroubleCommentLikeRepository troubleCommentLikeRepository;
-    private final UserService userService;
-    private final ConvertTimeService convertTimeService;
     private final TroubleService troubleService;
 
     // 댓글 등록하기

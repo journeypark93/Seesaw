@@ -1,13 +1,12 @@
 package com.example.seesaw.controller;
 
-import com.example.seesaw.dto.KakaoGenerationDto;
-import com.example.seesaw.security.UserDetailsImpl;
+import com.example.seesaw.dto.KakaoRequstDto;
 import com.example.seesaw.service.KakaoUserService;
+import com.example.seesaw.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +16,7 @@ import java.util.List;
 @RestController
 public class KakaoUserController {
     private final KakaoUserService kakaoUserService;
+    private final UserService userService;
     public final String ACCESS_TOKEN = "Authorization";//"accessToken";
     public final String TOKEN_TYPE = "Bearer";
 
@@ -34,10 +34,14 @@ public class KakaoUserController {
         response.addHeader(ACCESS_TOKEN, TOKEN_TYPE + " " + tokens.get(0) + ";" + TOKEN_TYPE + " " + tokens.get(1));
     }
 
-    @PostMapping("/kakao/generation")
-    public ResponseEntity<String> registerUser(@RequestBody KakaoGenerationDto kakaoGenerationDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        kakaoUserService.userGeneration(kakaoGenerationDto, userDetails.getUser());
+    @PostMapping("/user/kakao/signup")
+    public ResponseEntity<String> kakaoUser(@RequestBody KakaoRequstDto kakaoRequstDto, HttpServletResponse response) throws JsonProcessingException {
+
+        List<String> tokens = kakaoUserService.signUpKakaoUser(kakaoRequstDto);
+
+        response.addHeader(ACCESS_TOKEN, TOKEN_TYPE + " " + tokens.get(0) + ";" + TOKEN_TYPE + " " + tokens.get(1));
+
         return ResponseEntity.ok()
-                .body("카카오유저 세대저장 완료");
+                .body("카카오유저 회원가입 완료");
     }
 }

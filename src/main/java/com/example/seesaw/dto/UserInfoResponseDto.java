@@ -18,6 +18,4 @@ public class UserInfoResponseDto {
     private String mbti;
     private String generation;
     private List<ProfileListDto> ProfileImages;
-
-
 }

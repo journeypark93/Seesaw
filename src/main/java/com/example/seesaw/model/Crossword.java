@@ -34,7 +34,7 @@ public class Crossword {
     private boolean isOriental; // 가로면 true, 세로면 false
 
     @ManyToOne
-    @JoinColumn(name = "QuizNum_ID", nullable = false)
+    @JoinColumn(name = "QuizNum_ID")
     private QuizNum quizNum;
 
     public Crossword(int x, int y, String word, String contents, int wordCount, boolean isOriental){

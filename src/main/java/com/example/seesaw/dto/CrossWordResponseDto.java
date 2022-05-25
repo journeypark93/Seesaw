@@ -1,6 +1,7 @@
 package com.example.seesaw.dto;
 
 import com.example.seesaw.game.Word;
+import com.example.seesaw.model.Crossword;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -5,22 +5,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
+import java.util.List;
+
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MbtiRequestDto {
+public class KakaoRequstDto {
 
     private String id;
+    private String nickname;
+    private String generation;
     private String energy;
     private String insight;
     private String judgement;
     private String lifePattern;
+    private List<Long> charId;
+    private boolean admin = false;
+    private String adminToken = "";
 
-    public MbtiRequestDto(KakaoRequstDto kakaoRequstDto) {
-        this.energy = kakaoRequstDto.getEnergy();
-        this.insight = kakaoRequstDto.getInsight();
-        this.judgement = kakaoRequstDto.getJudgement();
-        this.lifePattern = kakaoRequstDto.getLifePattern();
-    }
 }

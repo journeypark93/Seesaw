@@ -1,9 +1,17 @@
 package com.example.seesaw.service;
 
 import com.example.seesaw.dto.KakaoGenerationDto;
+import com.example.seesaw.dto.KakaoRequstDto;
 import com.example.seesaw.dto.KakaoUserInfoDto;
+import com.example.seesaw.dto.MbtiRequestDto;
+import com.example.seesaw.exception.CustomException;
+import com.example.seesaw.exception.ErrorCode;
 import com.example.seesaw.model.User;
+import com.example.seesaw.model.UserProfile;
+import com.example.seesaw.model.UserProfileNum;
 import com.example.seesaw.model.UserRoleEnum;
+import com.example.seesaw.repository.UserProfileNumRepository;
+import com.example.seesaw.repository.UserProfileRepository;
 import com.example.seesaw.repository.UserRepository;
 import com.example.seesaw.security.UserDetailsImpl;
 import com.example.seesaw.security.UserDetailsServiceImpl;
@@ -36,8 +44,11 @@ public class KakaoUserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final UserProfileNumRepository userProfileNumRepository;
+    private final UserProfileRepository userProfileRepository;
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final UserService userService;
 
     public List<String> kakaoLogin(String code) throws JsonProcessingException {
 
@@ -50,12 +61,16 @@ public class KakaoUserService {
         // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
 
-        // 3. 필요시에 회원가입
-        User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
-
+        // 3. 회원가입이 안된 경우, throw error -> 추가정보 획득하도록 함.
+        User kakaoUser = userRepository.findByUsername(String.valueOf(kakaoUserInfo.getId()))
+                .orElse(null);
+        if(kakaoUser == null){
+            throw new CustomException(ErrorCode.BLANK_KAKAO_USER_INFO);
+        }
         // 4. 로그인 JWT 토큰 발행
         return jwtTokenCreate(kakaoUser);
     }
+
 
     private String getAccessToken(String code) throws JsonProcessingException {
 
@@ -119,27 +134,52 @@ public class KakaoUserService {
         return new KakaoUserInfoDto(id, email);
     }
 
-    private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
+    private User signUpKakaoUser(KakaoUserInfoDto kakaoUserInfo, KakaoRequstDto kakaoRequstDto) {
 
         // DB 에 중복된 Kakao Id 가 있는지 확인
-        Long kakaoId = kakaoUserInfo.getId();
-        String kakaoUsername = kakaoUserInfo.getEmail();
+        String kakaoUsername = String.valueOf(kakaoUserInfo.getId());
+        String kakaoId = kakaoUserInfo.getEmail();
 
-        System.out.println("input kakaoEmail : " +kakaoUsername);
+        System.out.println("input kakaoId : " +kakaoUsername);
+        System.out.println("input kakaoEmail : " +kakaoId);
 
         User kakaoUser = userRepository.findByUsername(kakaoUsername)
                 .orElse(null);
-        if (kakaoUser == null) {
-            // 회원가입
 
-            // password: random UUID
-            String password = UUID.randomUUID().toString();
-            String encodedPassword = passwordEncoder.encode(password);
-
-
-            kakaoUser = new User(kakaoUsername, encodedPassword, 0L, UserRoleEnum.USER, kakaoId, "ENFJ", "동그리동동", "X세대");
-            userRepository.save(kakaoUser);
+        if(kakaoUser != null) {
+            throw new IllegalArgumentException("이미 카카오 로그인을 완료하였습니다.");
         }
+
+            // 회원가입
+             //password: random UUID(여기는 원래 코드임)
+            String passwsord = UUID.randomUUID().toString();
+            String encodedPassword = passwordEncoder.encode(passwsord);
+
+            //nickname
+            String nickname = kakaoRequstDto.getNickname();
+            userService.checkNickName(nickname);
+
+            //mbti
+            String generation = kakaoRequstDto.getGeneration();
+            MbtiRequestDto mbtiRequestDto = new MbtiRequestDto(kakaoRequstDto);
+            String mbti = userService.checkMbti(mbtiRequestDto);
+
+            //profile 저장
+            List<Long> charIds = kakaoRequstDto.getCharId();
+            if (charIds == null) {
+                throw new IllegalArgumentException("charIds가 null 입니다.");
+            }
+
+            Long postCount = 0L;
+
+            kakaoUser = new User(kakaoUsername, encodedPassword, nickname, generation, postCount, mbti, UserRoleEnum.USER, kakaoId);
+            userRepository.save(kakaoUser); // DB 저장
+
+            for (Long charId : charIds) {
+                UserProfile userProfile = userProfileRepository.findByCharId(charId);
+                UserProfileNum userProfileNum = new UserProfileNum(userProfile, kakaoUser);
+                userProfileNumRepository.save(userProfileNum);
+            }
         return kakaoUser;
     }
 
@@ -171,5 +211,22 @@ public class KakaoUserService {
         System.out.println("세대저장 위해 찾은 kakaoUsername : " + kakaoUser.getUsername());
         kakaoUser.setGeneration(kakaoGenerationDto.getGeneration());
         userRepository.save(kakaoUser);
+    }
+
+    public List<String> signUpKakaoUser(KakaoRequstDto kakaoRequstDto) throws JsonProcessingException {
+        // 1. "인가 코드"로 "액세스 토큰" 요청
+        String accessToken = getAccessToken(kakaoRequstDto.getId());
+
+        System.out.println("인가 코드 : " + kakaoRequstDto.getId());
+        System.out.println("엑세스 토큰 : " + accessToken);
+
+        // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
+        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+
+        // 3. 회원가입
+        User kakaoUser = signUpKakaoUser(kakaoUserInfo, kakaoRequstDto);
+
+        // 4. 로그인 JWT 토큰 발행
+        return jwtTokenCreate(kakaoUser);
     }
 }

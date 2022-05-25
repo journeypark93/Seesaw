@@ -35,13 +35,13 @@ public class Trouble extends Timestamped {
     @Column
     private Long views;
 
-    @OneToMany(mappedBy = "trouble", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "trouble", cascade = CascadeType.ALL)
     private List<TroubleImage> troubleImages;
 
-    @OneToMany(mappedBy = "trouble", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "trouble", cascade = CascadeType.ALL)
     private List<TroubleTag> troubleTags;
 
-    @OneToMany(mappedBy = "trouble", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "trouble", cascade = CascadeType.ALL)
     private List<TroubleComment> troubleComments;
 
     @ManyToOne
