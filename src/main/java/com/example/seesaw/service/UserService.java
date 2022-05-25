@@ -119,8 +119,9 @@ public class UserService {
 
     //닉네임 유효성 검사
     public String checkNickName(String nickname) {
+        String checkNickname = nickname.replaceAll(" ", "");
         Pattern nickNamePattern = Pattern.compile("^\\S{2,8}$");
-        Matcher nickNameMatcher = nickNamePattern.matcher(nickname);
+        Matcher nickNameMatcher = nickNamePattern.matcher(checkNickname);
 
         Optional<User> foundByNickName = userRepository.findByNickname(nickname);
         if (foundByNickName.isPresent()) {

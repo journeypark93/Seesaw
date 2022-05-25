@@ -62,7 +62,7 @@ public class KakaoUserService {
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
 
         // 3. 회원가입이 안된 경우, throw error -> 추가정보 획득하도록 함.
-        User kakaoUser = userRepository.findByUsername(kakaoUserInfo.getEmail())
+        User kakaoUser = userRepository.findByUsername(String.valueOf(kakaoUserInfo.getId()))
                 .orElse(null);
         if(kakaoUser == null){
             throw new CustomException(ErrorCode.BLANK_KAKAO_USER_INFO);
@@ -84,7 +84,7 @@ public class KakaoUserService {
 
         // 클라이언트 아이디, url 확인
         body.add("client_id", "6f05e336898a8b021c45ac7c1f8770b8");
-        body.add("redirect_uri", "https://play-seesaw.com/user/kakao/callback");
+        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기

@@ -67,7 +67,7 @@ public class PostController {
         postS3Service.delete(postId, null);
         postRepository.deleteById(postId);
         return ResponseEntity.ok()
-                .body("고민글 삭제완료");
+                .body("단어장 삭제완료");
     }
 
     //단어장 상세조회

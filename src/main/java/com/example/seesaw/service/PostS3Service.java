@@ -87,17 +87,16 @@ public class PostS3Service {
     public void delete(Long postId, List<String> imageUrls) {
         List<PostImage> savedImages = postImageRepository.findAllByPostId(postId);
 
-        List<String> lastImages = new ArrayList<>();
-        for (PostImage savedImage: savedImages){
-            lastImages.add(savedImage.getPostImage());
-        }
-        if(imageUrls != null){
-            lastImages.removeAll(imageUrls);
+        for (PostImage savedImage: savedImages) {
+            //살리고 싶은 이미지에 기존에 저장된 이미지가 포함되어 있다면, 지워야할 이미지에서 지워라!
+            if(imageUrls != null && imageUrls.contains(savedImage.getPostImage())){
+                savedImages.remove(savedImage);
+            }
         }
 
-        for (String lastImage : lastImages) {
-            if (!lastImage.equals("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg")) {
-                String image = lastImage.replace("https://myseesaw.s3.ap-northeast-2.amazonaws.com/", "");
+        for (PostImage savedImage: savedImages){
+            if (!savedImage.getPostImage().equals("https://myseesaw.s3.ap-northeast-2.amazonaws.com/DictBasicCard.svg")) {
+                String image = savedImage.getPostImage().replace("https://myseesaw.s3.ap-northeast-2.amazonaws.com/", "");
                 boolean isExistObject = s3Client.doesObjectExist(bucket, image);
                 System.out.println("지워야할 url 주소 : " + image);
                 System.out.println("isExistObject : " + isExistObject);
@@ -105,8 +104,8 @@ public class PostS3Service {
                     s3Client.deleteObject(bucket, image);
                 }
             }
-            System.out.println(lastImage);
-            postImageRepository.deleteByPostImage(lastImage);
+            System.out.println(savedImage.getPostImage());
+            postImageRepository.deleteById(savedImage.getId());
         }
     }
 
