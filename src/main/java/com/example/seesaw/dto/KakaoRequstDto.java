@@ -13,7 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 public class KakaoRequstDto {
 
-    private String id;
+    private String kakaoId;
+    private String username;
     private String nickname;
     private String generation;
     private String energy;
