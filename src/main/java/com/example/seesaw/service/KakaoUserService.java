@@ -1,15 +1,13 @@
 package com.example.seesaw.service;
 
-import com.example.seesaw.dto.KakaoGenerationDto;
-import com.example.seesaw.dto.KakaoRequstDto;
-import com.example.seesaw.dto.KakaoUserInfoDto;
-import com.example.seesaw.dto.MbtiRequestDto;
+import com.example.seesaw.dto.*;
 import com.example.seesaw.exception.CustomException;
 import com.example.seesaw.exception.ErrorCode;
 import com.example.seesaw.model.User;
 import com.example.seesaw.model.UserProfile;
 import com.example.seesaw.model.UserProfileNum;
 import com.example.seesaw.model.UserRoleEnum;
+import com.example.seesaw.repository.MbtiRepository;
 import com.example.seesaw.repository.UserProfileNumRepository;
 import com.example.seesaw.repository.UserProfileRepository;
 import com.example.seesaw.repository.UserRepository;
@@ -46,11 +44,13 @@ public class KakaoUserService {
     private final UserRepository userRepository;
     private final UserProfileNumRepository userProfileNumRepository;
     private final UserProfileRepository userProfileRepository;
+    private final MbtiRepository mbtiRepository;
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final UserService userService;
 
     public List<String> kakaoLogin(String code) throws JsonProcessingException {
+        List<String> infos = new ArrayList<>();
 
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getAccessToken(code);
@@ -61,14 +61,21 @@ public class KakaoUserService {
         // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
 
-        // 3. 회원가입이 안된 경우, throw error -> 추가정보 획득하도록 함.
-        User kakaoUser = userRepository.findByUsername(String.valueOf(kakaoUserInfo.getId()))
+        // 3. 회원가입이 안된 경우, token 없이 id, email 만 보낸다.
+        User kakaoUser = userRepository.findByUsername(kakaoUserInfo.getKakaoId())
                 .orElse(null);
         if(kakaoUser == null){
-            throw new CustomException(ErrorCode.BLANK_KAKAO_USER_INFO);
+            infos.add(kakaoUserInfo.getKakaoId());
+            infos.add(kakaoUserInfo.getEmail());
+            infos.add("");
+            infos.add("");
+        } else{
+            infos.add("");
+            infos.add("");
+            // 4. 로그인 JWT 토큰 발행
+            infos.addAll(jwtTokenCreate(kakaoUser));
         }
-        // 4. 로그인 JWT 토큰 발행
-        return jwtTokenCreate(kakaoUser);
+        return infos;
     }
 
 
@@ -131,17 +138,17 @@ public class KakaoUserService {
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
 
-        return new KakaoUserInfoDto(id, email);
+        return new KakaoUserInfoDto(String.valueOf(id), email);
     }
 
-    private User signUpKakaoUser(KakaoUserInfoDto kakaoUserInfo, KakaoRequstDto kakaoRequstDto) {
+    private User signUpKakaoUser(KakaoRequstDto kakaoRequstDto) {
 
         // DB 에 중복된 Kakao Id 가 있는지 확인
-        String kakaoUsername = String.valueOf(kakaoUserInfo.getId());
-        String kakaoId = kakaoUserInfo.getEmail();
+        String kakaoUsername = kakaoRequstDto.getKakaoId();
+        String kakaoId = kakaoRequstDto.getUsername();
 
-        System.out.println("input kakaoId : " +kakaoUsername);
-        System.out.println("input kakaoEmail : " +kakaoId);
+        System.out.println("input kakaoId -> KakaoUsername : " +kakaoUsername);
+        System.out.println("input kakaoEmail -> kakaoId : " +kakaoId);
 
         User kakaoUser = userRepository.findByUsername(kakaoUsername)
                 .orElse(null);
@@ -204,29 +211,32 @@ public class KakaoUserService {
         return tokens;
     }
 
-    public void userGeneration(KakaoGenerationDto kakaoGenerationDto, User user) {
-        User kakaoUser = userRepository.findById(user.getId()).orElseThrow(
-                () -> new IllegalArgumentException("해당 유저는 없습니다.")
-        );
-        System.out.println("세대저장 위해 찾은 kakaoUsername : " + kakaoUser.getUsername());
-        kakaoUser.setGeneration(kakaoGenerationDto.getGeneration());
-        userRepository.save(kakaoUser);
-    }
 
-    public List<String> signUpKakaoUser(KakaoRequstDto kakaoRequstDto) throws JsonProcessingException {
-        // 1. "인가 코드"로 "액세스 토큰" 요청
-        String accessToken = getAccessToken(kakaoRequstDto.getId());
-
-        System.out.println("인가 코드 : " + kakaoRequstDto.getId());
-        System.out.println("엑세스 토큰 : " + accessToken);
-
-        // 2. "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
-        KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
+    public List<String> signUpUser(KakaoRequstDto kakaoRequstDto) {
 
         // 3. 회원가입
-        User kakaoUser = signUpKakaoUser(kakaoUserInfo, kakaoRequstDto);
+        User kakaoUser = signUpKakaoUser(kakaoRequstDto);
 
         // 4. 로그인 JWT 토큰 발행
         return jwtTokenCreate(kakaoUser);
     }
+
+//    public String checkKakaoMbti(KakaoMbtiRequestDto kakoMbtiRequestDto) {
+//
+//        //mbti 설정 시, 비밀번호 id가 없으면 가입을 못하도록 함.
+//        if(kakoMbtiRequestDto.getCode() == null) {
+//            throw new CustomException(ErrorCode.BLANK_USER_NAME);
+//        }
+//
+//        String mbtiName = kakoMbtiRequestDto.getEnergy() + kakoMbtiRequestDto.getInsight() + kakoMbtiRequestDto.getJudgement() + kakoMbtiRequestDto.getLifePattern();
+//        if (mbtiName.length() != 4 || mbtiName.contains("null")) {
+//            throw new CustomException(ErrorCode.BLANK_USER_MBTI);
+//        }
+//        //MBTI table 만들어서 맞는 설명으로 치환해서 내려주기
+//        String detail = mbtiRepository.findByMbtiName(mbtiName).getDetail();
+//        if (detail.isEmpty()) {
+//            throw new IllegalArgumentException("해당하는 MBTI가 없습니다.");
+//        }
+//        return detail;
+//    }
 }

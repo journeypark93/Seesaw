@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class KakaoUserInfoDto {
 
-    private Long id;
+    private String kakaoId;
     private String email;
+
 }
