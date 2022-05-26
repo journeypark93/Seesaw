@@ -1,8 +1,8 @@
 package com.example.seesaw.security;
 
-import com.example.seesaw.model.User;
+import com.example.seesaw.user.model.User;
 import com.example.seesaw.redis.RedisService;
-import com.example.seesaw.repository.UserRepository;
+import com.example.seesaw.user.repository.UserRepository;
 import com.example.seesaw.security.jwt.JwtTokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
