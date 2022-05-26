@@ -41,7 +41,7 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
 
-    @Column(unique = true)
+    @Column
     private String kakaoId;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
