@@ -18,6 +18,7 @@ public class MbtiRequestDto {
     private String lifePattern;
 
     public MbtiRequestDto(KakaoRequstDto kakaoRequstDto) {
+        this.id = kakaoRequstDto.getKakaoId();
         this.energy = kakaoRequstDto.getEnergy();
         this.insight = kakaoRequstDto.getInsight();
         this.judgement = kakaoRequstDto.getJudgement();
