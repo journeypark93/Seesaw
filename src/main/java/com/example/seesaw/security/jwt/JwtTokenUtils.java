@@ -2,15 +2,9 @@ package com.example.seesaw.security.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.seesaw.dto.UserInfoResponseDto;
-import com.example.seesaw.model.User;
-import com.example.seesaw.model.UserProfile;
-import com.example.seesaw.model.UserProfileNum;
-import lombok.ToString;
+import com.example.seesaw.user.model.User;
 
-import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.List;
 
 public final class JwtTokenUtils {
 
